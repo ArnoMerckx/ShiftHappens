@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7641ce3cdd2134a9b417d3cf2aaf6b, type: 3}
+  m_Name: E_BOB_DENTIST
+  m_EditorClassIdentifier: ShiftHappens.Runtime::EvidenceDefinition
+  evidenceId: E_BOB_DENTIST
+  displayName: Bob - Approved Dentist Absence
+  bodyText: "Bob's dentist absence is approved for Monday, 10:00\u201311:30.\nHe will be offsite throughout that period. This supersedes his\npublished printer assignment. HR holds the approved absence record."
+  source: 1
+  availableDayIndex: 0
+  availableMinute: 540
+  claimDefinitions:
+  - {fileID: 11400000, guid: 6ec8c114c79e69249acc72a30f2337dd, type: 2}

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6cee324889ca204b878b5896dbd5c1d, type: 3}
+  m_Name: C_ALICE_MEETING
+  m_EditorClassIdentifier: ShiftHappens.Runtime::WhereaboutsClaimDefinition
+  claimId: C_ALICE_MEETING
+  employee: {fileID: 11400000, guid: 853e01b36d3d67b4b88dcbd66430c5dc, type: 2}
+  location: {fileID: 11400000, guid: 0fb60a5b6c8c6634198cba748e4c7c24, type: 2}
+  dayIndex: 0
+  startMinute: 565
+  endMinute: 590
+  requiresPresence: 1

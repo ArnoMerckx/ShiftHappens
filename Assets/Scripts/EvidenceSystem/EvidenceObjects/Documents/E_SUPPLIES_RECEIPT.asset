@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7641ce3cdd2134a9b417d3cf2aaf6b, type: 3}
+  m_Name: E_SUPPLIES_RECEIPT
+  m_EditorClassIdentifier: ShiftHappens.Runtime::EvidenceDefinition
+  evidenceId: E_SUPPLIES_RECEIPT
+  displayName: Delivery - Office Supplies
+  bodyText: 'DELIVERY - OFFICE SUPPLIES
+
+
+    Carton ID: supplies_carton_01
+
+    Handover: Monday, 08:50
+
+
+    Steve accepted custody of this carton and temporarily
+
+    placed it in the supply closet.
+
+
+    Signed: Steve'
+  source: 4
+  availableDayIndex: 0
+  availableMinute: 540
+  claimDefinitions:
+  - {fileID: 11400000, guid: 4e4eef41390be9a4b86396dc320c32cc, type: 2}

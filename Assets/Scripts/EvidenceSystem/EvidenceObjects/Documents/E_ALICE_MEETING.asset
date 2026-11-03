@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7641ce3cdd2134a9b417d3cf2aaf6b, type: 3}
+  m_Name: E_ALICE_MEETING
+  m_EditorClassIdentifier: ShiftHappens.Runtime::EvidenceDefinition
+  evidenceId: E_ALICE_MEETING
+  displayName: Alice - Accounts Meeting
+  bodyText: "Alice's approved accounts meeting runs Monday, 09:25\u201309:50.\nAttendance requires her to remain in the accounts office\nthroughout the meeting. HR holds the attendance record."
+  source: 1
+  availableDayIndex: 0
+  availableMinute: 540
+  claimDefinitions:
+  - {fileID: 11400000, guid: fd57a93d3cbbada4cb4010ebc63742b4, type: 2}
