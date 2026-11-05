@@ -62,6 +62,21 @@ public sealed class IncidentInstance
         Status = IncidentStatus.Open;
     }
 
+    internal IncidentInstance(IncidentInstance source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+        Schedule = source.Schedule;
+        DisplayName = source.DisplayName;
+        Description = source.Description;
+        LocationId = source.LocationId;
+        RelatedItemId = source.RelatedItemId;
+        ReviewDelayMinutes = source.ReviewDelayMinutes;
+
+        Status = IncidentStatus.Open;
+    }
+
     public ReportValidationResult TrySubmit(IncidentReport report, ReportSubmissionValidator validator, int currentDayIndex, int currentMinute)
     {
         if (validator == null)
@@ -92,6 +107,20 @@ public sealed class IncidentInstance
 
         Status = decision.Verdict == HrVerdict.Approved ? IncidentStatus.Approved : IncidentStatus.Rejected;
 
+        return true;
+    }
+
+    public bool TryMarkOverdue(GameTime now)
+    {
+        if (Status != IncidentStatus.Open)
+            return false;
+
+        var deadline = new GameTime(DayIndex, DeadlineMinute);
+
+        if (now.TotalMilliseconds <= deadline.TotalMilliseconds)
+            return false;
+
+        Status = IncidentStatus.Overdue;
         return true;
     }
 }

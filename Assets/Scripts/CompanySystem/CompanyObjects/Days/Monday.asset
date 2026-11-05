@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e73929431499ade44af523a503a1385b, type: 3}
+  m_Name: Monday
+  m_EditorClassIdentifier: ShiftHappens.Runtime::DayDefinition
+  dayId: monday
+  displayName: Monday
+  dayIndex: 0
+  startMinute: 540
+  endMinute: 1020
+  gameSecondsPerRealSecond: 20
+  employees:
+  - {fileID: 11400000, guid: 853e01b36d3d67b4b88dcbd66430c5dc, type: 2}
+  - {fileID: 11400000, guid: 1c1502d536ba21847834b7fb5cdeda2c, type: 2}
+  - {fileID: 11400000, guid: a5fbfdd970b56f44389be5a2d8b0a67e, type: 2}
+  - {fileID: 11400000, guid: 1e80402a7f0efa846b23f68a91dbdacd, type: 2}
+  - {fileID: 11400000, guid: 548c0e9751c106248b8d5c3bad7eeb8d, type: 2}
+  evidence:
+  - {fileID: 11400000, guid: 5d3bef4b1ba26264ba46ef6b7cbfdec6, type: 2}
+  - {fileID: 11400000, guid: 230d300fef767db43b9e1abb453b66cc, type: 2}
+  - {fileID: 11400000, guid: 2d56024aae1ce914ca465a6988223d35, type: 2}
+  - {fileID: 11400000, guid: 729a45a44253b834f9fabede8f44e273, type: 2}
+  - {fileID: 11400000, guid: eb57a2a069ea75b42b5d123ac393fbae, type: 2}
+  - {fileID: 11400000, guid: 65490d69b9fb2a647b82d8670431daa3, type: 2}
+  - {fileID: 11400000, guid: 850e8b4e466862945aae40466e7e1a85, type: 2}
+  worldApprovedRecords:
+  - {fileID: 11400000, guid: 5ccc73b436f4e884985b524d77bc3512, type: 2}
+  - {fileID: 11400000, guid: c8588806691442f47b9c3262651b5cd8, type: 2}
+  - {fileID: 11400000, guid: f6acd2341f84a3f40adc53b835728227, type: 2}
+  - {fileID: 11400000, guid: 13f72dccddc3090469c56f8711c10aee, type: 2}
+  hrApprovedRecords:
+  - {fileID: 11400000, guid: 5ccc73b436f4e884985b524d77bc3512, type: 2}
+  - {fileID: 11400000, guid: c8588806691442f47b9c3262651b5cd8, type: 2}
+  - {fileID: 11400000, guid: f6acd2341f84a3f40adc53b835728227, type: 2}
+  - {fileID: 11400000, guid: 13f72dccddc3090469c56f8711c10aee, type: 2}
+  hrKnownClaims:
+  - {fileID: 11400000, guid: 6ec8c114c79e69249acc72a30f2337dd, type: 2}
+  - {fileID: 11400000, guid: fd57a93d3cbbada4cb4010ebc63742b4, type: 2}
+  - {fileID: 11400000, guid: 1ff7840c240235546a3a85dcb0b17bcb, type: 2}
+  - {fileID: 11400000, guid: 7e72207b33c875549b2a72738fa70cce, type: 2}
+  incidents:
+  - instanceId: D0I1
+    incident: {fileID: 11400000, guid: e40e8f84c1cf7b84fa8f5b50c9073bcb, type: 2}
+    occurrenceStartMinute: 575
+    occurrenceEndMinute: 580
+    deliveryMinute: 590
+    deadlineMinute: 630
+  - instanceId: D0I2
+    incident: {fileID: 11400000, guid: e96fd0d66d73bf1479b92331d565a2b7, type: 2}
+    occurrenceStartMinute: 635
+    occurrenceEndMinute: 640
+    deliveryMinute: 675
+    deadlineMinute: 720
+  - instanceId: D0I3
+    incident: {fileID: 11400000, guid: aa504ebe685d9e647bab5454661994b8, type: 2}
+    occurrenceStartMinute: 815
+    occurrenceEndMinute: 820
+    deliveryMinute: 840
+    deadlineMinute: 900
