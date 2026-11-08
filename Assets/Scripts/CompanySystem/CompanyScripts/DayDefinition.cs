@@ -58,6 +58,7 @@ public class DayDefinition : ScriptableObject
         }
 
         var employeeIds = new List<string>();
+        var employeePresentation = new List<EmployeeViewData>();
 
         foreach (var employee in employees)
         {
@@ -67,6 +68,7 @@ public class DayDefinition : ScriptableObject
             }
 
             employeeIds.Add(employee.EmployeeId);
+            employeePresentation.Add(new EmployeeViewData(employee.EmployeeId, employee.DisplayName));
         }
 
         var worldRecords = new List<ApprovedScheduleRecord>();
@@ -115,7 +117,7 @@ public class DayDefinition : ScriptableObject
             knownClaims.Add(definition.ToClaim());
         }
 
-        return new DayScheduleData(settings, employeeIds, worldRecords,hrRecords, knownClaims);
+        return new DayScheduleData(settings, employeeIds, worldRecords, hrRecords, knownClaims, employeePresentation);
     }
 
     public DayData GetData()

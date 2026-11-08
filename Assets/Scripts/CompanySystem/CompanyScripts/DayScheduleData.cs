@@ -8,7 +8,9 @@ public sealed class DayScheduleData
     public IReadOnlyList<ApprovedScheduleRecord> WorldApprovedRecords { get; }
     public HrKnowledge HrKnowledge { get; }
 
-    public DayScheduleData(WorkdaySettings settings, List<string> employeeIds,List<ApprovedScheduleRecord> worldApprovedRecords, List<ApprovedScheduleRecord> hrApprovedRecords, List<Claim> hrKnownClaims)
+    public IReadOnlyList<EmployeeViewData> EmployeeRoster { get; }
+
+    public DayScheduleData(WorkdaySettings settings, List<string> employeeIds,List<ApprovedScheduleRecord> worldApprovedRecords, List<ApprovedScheduleRecord> hrApprovedRecords, List<Claim> hrKnownClaims, List<EmployeeViewData> employeePresentation = null)
     {
         if (settings == null)
             throw new ArgumentNullException(nameof(settings));
@@ -93,6 +95,7 @@ public sealed class DayScheduleData
         Settings = settings;
         EmployeeIds = employeeCopy.AsReadOnly();
         WorldApprovedRecords = worldCopy.AsReadOnly();
+        EmployeeRoster = BuildEmployeeRoster(employeeCopy, employeePresentation).AsReadOnly();
         HrKnowledge = knowledge;
     }
 
@@ -104,5 +107,45 @@ public sealed class DayScheduleData
         {
             ScheduleResolver.GetPresence(record.EmployeeId,  record.LocationId, fullDay, records);
         }
+    }
+
+    private static List<EmployeeViewData> BuildEmployeeRoster(List<string> employeeIds, List<EmployeeViewData> employeePresentation)
+    {
+        var roster = new List<EmployeeViewData>();
+
+        if (employeePresentation == null)
+        {
+            foreach (string id in employeeIds)
+                roster.Add(new EmployeeViewData(id, id));
+
+            return roster;
+        }
+
+        var byId = new Dictionary<string, EmployeeViewData>(
+            StringComparer.Ordinal);
+
+        foreach (EmployeeViewData employee in employeePresentation)
+        {
+            if (employee == null)
+                throw new ArgumentException("Employee presentation cannot contain null.", nameof(employeePresentation));
+
+            if (byId.ContainsKey(employee.EmployeeId))
+                throw new ArgumentException("Employee presentation contains a duplicate ID.", nameof(employeePresentation));
+
+            byId.Add(employee.EmployeeId, employee);
+        }
+
+        if (byId.Count != employeeIds.Count)
+            throw new ArgumentException("Employee presentation must match the day roster.", nameof(employeePresentation));
+
+        foreach (string id in employeeIds)
+        {
+            if (!byId.TryGetValue(id, out EmployeeViewData employee))
+                throw new ArgumentException("Employee presentation must match the day roster.", nameof(employeePresentation));
+
+            roster.Add(new EmployeeViewData(id, employee.DisplayName));
+        }
+
+        return roster;
     }
 }

@@ -6,6 +6,9 @@ using UnityEngine.InputSystem.UI;
 [DisallowMultipleComponent]
 public sealed class ViewModeController : MonoBehaviour
 {
+
+    [SerializeField] private WindowManagerController windowManager;
+
     [SerializeField] private InputActionAsset actions;
 
     [SerializeField] private Camera viewCamera;
@@ -67,6 +70,9 @@ public sealed class ViewModeController : MonoBehaviour
 
     private void OnDisable()
     {
+        if (windowManager != null)
+            windowManager.TryCancelPointerOperation();
+
         waitingForPointerRelease = false;
 
         if (uiInputModule != null)
@@ -97,7 +103,7 @@ public sealed class ViewModeController : MonoBehaviour
             return;
         }
 
-        if (actions == null || viewCamera == null || playerLook == null || officeHud == null || desktopRoot == null || uiInputModule == null || sessionDriver == null || documentView == null)
+        if (actions == null || viewCamera == null || playerLook == null || officeHud == null || desktopRoot == null || uiInputModule == null || sessionDriver == null || documentView == null || windowManager == null)
         {
             Debug.LogError("Assign the camera, look, input and UI references.", this);
             enabled = false;
@@ -150,6 +156,11 @@ public sealed class ViewModeController : MonoBehaviour
 
             if (back.WasPressedThisFrame())
             {
+                if (CurrentMode == ViewMode.Computer && windowManager != null && windowManager.TryConsumeBack())
+                {
+                    return;
+                }
+
                 TryReturnToOffice();
                 return;
             }
@@ -249,6 +260,9 @@ public sealed class ViewModeController : MonoBehaviour
         bool computer = CurrentMode == ViewMode.Computer;
         bool transition = CurrentMode == ViewMode.Transition;
         bool inspecting = CurrentMode == ViewMode.InspectDocument;
+
+        if ((!computer || !CanUseViewInput) && windowManager != null)
+            windowManager.TryCancelPointerOperation();
 
         officeHud.SetActive(office);
         desktopRoot.SetActive(computer);

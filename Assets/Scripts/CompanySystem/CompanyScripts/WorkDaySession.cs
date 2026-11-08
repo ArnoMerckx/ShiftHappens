@@ -7,6 +7,8 @@ public sealed class WorkdaySession
     private readonly EventScheduler scheduler;
     private readonly EvidenceService evidence;
 
+    private readonly IReadOnlyList<EmployeeViewData> employeeRoster;
+
     public WorkdaySettings Settings { get; }
 
     public GameTime Now => clock.Now;
@@ -20,12 +22,20 @@ public sealed class WorkdaySession
     public WorkdayController Workday { get; }
     public DurationTimerService Timer { get; }
 
+    public ShiftOSNotificationState Notifications { get; } = new ShiftOSNotificationState();
+
+    public event Action<string> EvidenceChanged;
+
+    public event Action TimeAdvanced;
+
     public WorkdaySession(DayData day, CredibilityRules credibilityRules = null)
     {
         if (day == null)
             throw new ArgumentNullException(nameof(day));
 
         Settings = day.ScheduleData.Settings;
+
+        employeeRoster = day.ScheduleData.EmployeeRoster;
 
         clock = new GameClock(Settings.OpensAt, Settings.GameSecondsPerRealSecond);
 
@@ -48,11 +58,17 @@ public sealed class WorkdaySession
         Workday = new WorkdayController(Settings, scheduler, Deliveries, Submissions, Progress);
 
         Timer = new DurationTimerService(scheduler, Workday);
+
+        Timer.Completed += OnTimerCompleted;
+
+        Reviews.ReviewCompleted += OnHrReviewCompleted;
     }
 
     public void AdvanceRealSeconds(double realSeconds)
     {
         scheduler.AdvanceRealSeconds(realSeconds);
+
+        TimeAdvanced?.Invoke();
     }
 
     public void SetPaused(bool isPaused)
@@ -65,7 +81,12 @@ public sealed class WorkdaySession
         if (!Workday.CanAcceptWork)
             return false;
 
-        return evidence.MarkDiscovered(evidenceId, Now.DayIndex, Now.MinuteOfDay);
+        bool changed = evidence.MarkDiscovered(evidenceId, Now.DayIndex, Now.MinuteOfDay);
+
+        if (changed)
+            EvidenceChanged?.Invoke(evidenceId);
+
+        return changed;
     }
 
     public bool TryReadEvidence(string evidenceId)
@@ -73,7 +94,12 @@ public sealed class WorkdaySession
         if (!Workday.CanAcceptWork)
             return false;
 
-        return evidence.MarkRead(evidenceId, Now.DayIndex, Now.MinuteOfDay);
+        bool changed = evidence.MarkRead(evidenceId, Now.DayIndex, Now.MinuteOfDay);
+
+        if (changed)
+            EvidenceChanged?.Invoke(evidenceId);
+
+        return changed;
     }
 
     public bool IsEvidenceAvailable(string evidenceId)
@@ -94,5 +120,40 @@ public sealed class WorkdaySession
     public bool CanAttachEvidence(string evidenceId)
     {
         return evidence.CanAttach(evidenceId, Now.DayIndex, Now.MinuteOfDay);
+    }
+
+    public List<EvidenceDocumentViewData> GetAvailableDigitalDocuments(EvidenceSource source)
+    {
+        return evidence.GetAvailableDigitalDocuments(source, Now.DayIndex, Now.MinuteOfDay);
+    }
+
+    public List<EvidenceDocumentViewData> GetAttachableDocuments()
+    {
+        return evidence.GetAttachableDocuments(Now.DayIndex, Now.MinuteOfDay);
+    }
+
+    public List<EmployeeViewData> GetEmployeeRoster()
+    {
+        return new List<EmployeeViewData>(employeeRoster);
+    }
+
+    public List<ReportOverviewViewData> GetReportOverview()
+    {
+        var entries = new List<ReportOverviewViewData>();
+
+        foreach (IncidentInstance incident in Deliveries.DeliveredIncidents)
+            entries.Add(new ReportOverviewViewData(incident));
+
+        return entries;
+    }
+
+    private void OnTimerCompleted()
+    {
+        Notifications.Publish(ShiftOSNotificationKind.TimerExpired, "TickTock", "Your duration timer has finished.");
+    }
+
+    private void OnHrReviewCompleted(QueuedHrReview review, HrEvaluationResult result)
+    {
+        Notifications.Publish(ShiftOSNotificationKind.HrDecision, $"HR — {review.Incident.DisplayName}", $"{result.Verdict.ToString().ToUpperInvariant()}. " + "See BlamePoint's Report Overview for HR's reasoning.");
     }
 }
