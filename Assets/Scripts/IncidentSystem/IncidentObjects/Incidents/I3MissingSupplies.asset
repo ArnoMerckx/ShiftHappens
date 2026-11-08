@@ -14,16 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShiftHappens.Runtime::IncidentDefinition
   incidentId: I3
   displayName: Missing supplies
-  description: 'Office-supplies carton supplies_carton_01 has gone missing
-
-    from the supply closet.
+  description: 'Office-supplies carton supplies_carton_01 has gone missing from the supply closet.
 
 
-    The delivery receipt is on your desk beside the keyboard.
+    The delivery receipt is on your desk beside the keyboard. It records who accepted custody of this carton.
 
-    Check it alongside the available digital records before
 
-    submitting a supported accusation.'
+    Compare the available records and submit a supported accusation in BlamePoint. Relevant assignments or the receipt may support responsibility; neither proves theft.'
   location: {fileID: 11400000, guid: 08e9490668a035c4eb3c8b2f59d08425, type: 2}
   relatedItemId: supplies_carton_01
   reviewDelayMinutes: 15

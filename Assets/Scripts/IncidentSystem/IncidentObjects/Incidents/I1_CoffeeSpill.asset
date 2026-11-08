@@ -16,7 +16,11 @@ MonoBehaviour:
   displayName: Coffee spill
   description: 'A coffee spill has been reported in the break room.
 
-    Investigate and give us the name of who did it so we can ask them to clean it up.'
+
+    Submit a supported accusation in BlamePoint and attach relevant evidence. HR will check your submission against its approved records.
+
+
+    Approval means the accusation is supported; it does not prove who caused the spill.'
   location: {fileID: 11400000, guid: e840323682de81e4c95086e1e3136e1c, type: 2}
   relatedItemId: 
   reviewDelayMinutes: 10

@@ -11,6 +11,10 @@ public sealed class ShiftOSNotificationView : MonoBehaviour
     [SerializeField] private TMP_Text bodyLabel;
     [SerializeField, Min(1f)] private float displaySeconds = 6f;
 
+    [SerializeField] private AudioSource notificationAudio;
+    [SerializeField] private AudioClip timerExpiredClip;
+    [SerializeField] private AudioClip hrDecisionClip;
+
     private ShiftOSNotificationState notifications;
     private bool checkPending;
     private bool showing;
@@ -95,5 +99,23 @@ public sealed class ShiftOSNotificationView : MonoBehaviour
         remainingSeconds = displaySeconds;
         showing = true;
         panel.SetActive(true);
+
+        PlayNotificationSound(message);
+    }
+
+    private void PlayNotificationSound(ShiftOSNotification message)
+    {
+        if (notificationAudio == null)
+            return;
+
+        AudioClip clip = message.Kind switch
+        {
+            ShiftOSNotificationKind.TimerExpired => timerExpiredClip,
+            ShiftOSNotificationKind.HrDecision => hrDecisionClip,
+            _ => null
+        };
+
+        if (clip != null)
+            notificationAudio.PlayOneShot(clip);
     }
 }

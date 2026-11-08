@@ -14,7 +14,10 @@ public sealed class IncidentNoticeViewData
 
         InstanceId = incident.InstanceId;
         DisplayName = incident.DisplayName;
-        BodyText = incident.Description;
+        int start = incident.Occurrence.StartMinute;
+        int end = incident.Occurrence.EndMinute;
+
+        BodyText = $"Occurred: {start / 60:00}:{start % 60:00}–" + $"{end / 60:00}:{end % 60:00}\n\n" + incident.Description;
 
         int hour = incident.DeadlineMinute / 60;
         int minute = incident.DeadlineMinute % 60;

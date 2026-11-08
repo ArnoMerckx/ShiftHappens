@@ -22,7 +22,13 @@ public sealed class ReportOverviewViewData
 
         InstanceId = incident.InstanceId;
         DisplayName = incident.DisplayName;
-        BodyText = incident.Description;
+
+
+        int start = incident.Occurrence.StartMinute;
+        int end = incident.Occurrence.EndMinute;
+
+        BodyText = $"Occurred: {start / 60:00}:{start % 60:00}–" + $"{end / 60:00}:{end % 60:00}\n\n" + incident.Description;
+
         Status = incident.Status;
 
         int hour = incident.DeadlineMinute / 60;

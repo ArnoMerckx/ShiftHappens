@@ -142,7 +142,7 @@ public class WorkdaySettingsTests
             Assert.That(before.DayId, Is.EqualTo("monday"));
             Assert.That(before.DisplayName, Is.EqualTo("Monday"));
             Assert.That(before.WorkHours.EndMinute, Is.EqualTo(1020));
-            Assert.That(before.GameSecondsPerRealSecond, Is.EqualTo(20));
+            Assert.That(before.GameSecondsPerRealSecond, Is.EqualTo(original.GameSecondsPerRealSecond));
 
             Assert.That(after, Is.Not.SameAs(before));
             Assert.That(after.DayId, Is.EqualTo("changed"));

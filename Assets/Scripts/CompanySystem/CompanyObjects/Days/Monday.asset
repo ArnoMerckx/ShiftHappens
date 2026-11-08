@@ -17,7 +17,7 @@ MonoBehaviour:
   dayIndex: 0
   startMinute: 540
   endMinute: 1020
-  gameSecondsPerRealSecond: 20
+  gameSecondsPerRealSecond: 40
   employees:
   - {fileID: 11400000, guid: 853e01b36d3d67b4b88dcbd66430c5dc, type: 2}
   - {fileID: 11400000, guid: 1c1502d536ba21847834b7fb5cdeda2c, type: 2}
@@ -25,11 +25,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1e80402a7f0efa846b23f68a91dbdacd, type: 2}
   - {fileID: 11400000, guid: 548c0e9751c106248b8d5c3bad7eeb8d, type: 2}
   evidence:
+  - {fileID: 11400000, guid: eb57a2a069ea75b42b5d123ac393fbae, type: 2}
   - {fileID: 11400000, guid: 5d3bef4b1ba26264ba46ef6b7cbfdec6, type: 2}
   - {fileID: 11400000, guid: 230d300fef767db43b9e1abb453b66cc, type: 2}
   - {fileID: 11400000, guid: 2d56024aae1ce914ca465a6988223d35, type: 2}
   - {fileID: 11400000, guid: 729a45a44253b834f9fabede8f44e273, type: 2}
-  - {fileID: 11400000, guid: eb57a2a069ea75b42b5d123ac393fbae, type: 2}
   - {fileID: 11400000, guid: 65490d69b9fb2a647b82d8670431daa3, type: 2}
   - {fileID: 11400000, guid: 850e8b4e466862945aae40466e7e1a85, type: 2}
   worldApprovedRecords:

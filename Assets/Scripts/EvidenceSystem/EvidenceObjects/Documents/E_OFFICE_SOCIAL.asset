@@ -13,8 +13,28 @@ MonoBehaviour:
   m_Name: E_OFFICE_SOCIAL
   m_EditorClassIdentifier: ShiftHappens.Runtime::EvidenceDefinition
   evidenceId: E_OFFICE_SOCIAL
-  displayName: Office Social
-  bodyText: 'We''re choosing a theme for the next office social.
+  displayName: Start here - Floor manager briefing
+  bodyText: 'Welcome, floor manager.
+
+
+    Read correspondence in InWatch and compare published assignments in Excess. Check Swarms for incident notices, occurrence windows and report deadlines. You can arrange several app windows side by side.
+
+
+    In BlamePoint, choose an incident and employee, attach relevant evidence, then submit. Reports remain Pending until HR reviews them. Report Overview keeps the decision and reasons.
+
+
+    The office wall clock is your source of current time. Finish any active edit or popup, then use Escape to return to your desk and read it. Click the monitor to return.
+
+
+    TickTock takes a duration you calculate yourself. For example: if the wall clock reads 11:15 and a report is due at 12:00, a 40-minute timer leaves about five minutes for submission. Allow time to return and set it.
+
+
+    Time keeps moving while you read, inspect papers and switch views. Closing TickTock does not stop its timer. Inspect desk documents when a case points you toward them.
+
+
+    Office social:
+
+    We''re choosing a theme for the next office social.
 
     Please send your suggestions to administration.'
   source: 1

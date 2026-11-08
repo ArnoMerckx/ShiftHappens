@@ -109,7 +109,7 @@ public class ReportFormPresenterTests : EvidencePresentationTestBase
         var incident = session.Deliveries.GetDelivered("D0I2");
         var choice = presenter.GetOpenIncidents()[0];
         Assert.That(choice.DisplayName, Is.EqualTo(incident.DisplayName));
-        Assert.That(choice.BodyText, Is.EqualTo(incident.Description));
+        Assert.That(choice.BodyText, Is.EqualTo("Occurred: 10:35–10:40\n\n" + incident.Description));
         Assert.That(choice.DueTimeText, Is.EqualTo("12:00"));
     }
 

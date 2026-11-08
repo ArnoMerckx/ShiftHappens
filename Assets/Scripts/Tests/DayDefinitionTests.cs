@@ -103,7 +103,7 @@ public class DayDefinitionTests
         Assert.That(data.ScheduleData.Settings.DayIndex, Is.Zero);
         Assert.That(data.ScheduleData.Settings.WorkHours.StartMinute, Is.EqualTo(540));
         Assert.That(data.ScheduleData.Settings.WorkHours.EndMinute, Is.EqualTo(1020));
-        Assert.That(data.ScheduleData.Settings.GameSecondsPerRealSecond, Is.EqualTo(20));
+        Assert.That(data.ScheduleData.Settings.GameSecondsPerRealSecond, Is.EqualTo(40));
         Assert.That(data.ScheduleData.EmployeeIds, Is.EquivalentTo(new[]
         {
             "bob", "alice", "dave", "steve", "karen"
