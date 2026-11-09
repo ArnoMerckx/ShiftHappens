@@ -8,6 +8,8 @@ public sealed class WorkdaySessionDriver : MonoBehaviour
 
     public WorkdaySession Session { get; private set; }
 
+    public bool HasBegunShift { get; private set; }
+
     private void Awake()
     {
         if (day == null)
@@ -18,15 +20,26 @@ public sealed class WorkdaySessionDriver : MonoBehaviour
         }
 
         Session = new WorkdaySession(day.GetData());
+        Session.SetPaused(true);
     }
 
-    private void Start()
+    public bool TryBeginShift()
     {
+        if (Session == null || HasBegunShift)
+            return false;
+
+        HasBegunShift = true;
+        Session.SetPaused(false);
         Session.AdvanceRealSeconds(0);
+
+        return true;
     }
 
     private void Update()
     {
+        if (Session == null || !HasBegunShift)
+            return;
+
         Session.AdvanceRealSeconds(UnityEngine.Time.unscaledDeltaTime);
     }
 }

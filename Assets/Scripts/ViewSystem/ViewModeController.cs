@@ -44,11 +44,17 @@ public sealed class ViewModeController : MonoBehaviour
 
     private bool CanUseViewInput =>initialized && isActiveAndEnabled && hasFocus && Application.isFocused && !recoveringFocus;
 
-    public bool CanUseOfficeInput => CanUseViewInput && CurrentMode == ViewMode.Office;
+    public bool CanUseOfficeInput => CanUseViewInput && !IsSessionMenuOpen && CurrentMode == ViewMode.Office;
 
     public Vector2 LookDelta => CanUseOfficeInput && UnityEngine.Time.frameCount > ignoreLookThroughFrame ? look.ReadValue<Vector2>() : Vector2.zero;
 
     public bool InteractPressedThisFrame => CanUseOfficeInput && interact.WasPressedThisFrame();
+
+    private bool sessionMenuOpen;
+
+    public bool IsSessionMenuOpen => !sessionDriver.HasBegunShift || sessionMenuOpen;
+
+    public bool CanUseSessionMenuInput => CanUseViewInput && IsSessionMenuOpen && !waitingForPointerRelease;
 
     private bool initialized;
     private bool hasFocus;
@@ -149,6 +155,17 @@ public sealed class ViewModeController : MonoBehaviour
             return;
         }
 
+        if (IsSessionMenuOpen)
+        {
+            if (waitingForPointerRelease && (Mouse.current == null || !Mouse.current.leftButton.isPressed))
+            {
+                waitingForPointerRelease = false;
+                uiInputModule.enabled = true;
+            }
+
+            return;
+        }
+
         if (CurrentMode == ViewMode.Computer || CurrentMode == ViewMode.InspectDocument)
         {
             if (!Application.isFocused)
@@ -201,7 +218,7 @@ public sealed class ViewModeController : MonoBehaviour
 
     public bool TryReturnToOffice()
     {
-        if (!CanUseViewInput)
+        if (!CanUseViewInput || IsSessionMenuOpen)
             return false;
 
         bool returningFromComputer = CurrentMode == ViewMode.Computer;
@@ -261,16 +278,26 @@ public sealed class ViewModeController : MonoBehaviour
         bool transition = CurrentMode == ViewMode.Transition;
         bool inspecting = CurrentMode == ViewMode.InspectDocument;
 
-        if ((!computer || !CanUseViewInput) && windowManager != null)
+        if ((IsSessionMenuOpen || !computer || !CanUseViewInput) && windowManager != null)
+        {
             windowManager.TryCancelPointerOperation();
+        }
 
-        officeHud.SetActive(office);
+        officeHud.SetActive(office && !IsSessionMenuOpen);
         desktopRoot.SetActive(computer);
         documentView.gameObject.SetActive(inspecting);
 
         if (!hasFocus || !Application.isFocused || recoveringFocus)
         {
             waitingForPointerRelease = false;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
+
+        if (IsSessionMenuOpen)
+        {
+            waitingForPointerRelease = true;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             return;
@@ -339,5 +366,17 @@ public sealed class ViewModeController : MonoBehaviour
         Mouse mouse = Mouse.current;
 
         return mouse == null || (!mouse.leftButton.isPressed && !mouse.rightButton.isPressed && !mouse.middleButton.isPressed);
+    }
+
+    public void SetSessionMenuOpen(bool isOpen)
+    {
+        sessionMenuOpen = isOpen;
+
+        if (!initialized || !isActiveAndEnabled)
+            return;
+
+        recoveringFocus = true;
+        recoveryStartedFrame = UnityEngine.Time.frameCount;
+        ApplyModeState();
     }
 }
