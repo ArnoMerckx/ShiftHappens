@@ -20,6 +20,8 @@ public sealed class ViewModeController : MonoBehaviour
     [SerializeField] private GameObject desktopRoot;
     [SerializeField] private InputSystemUIInputModule uiInputModule;
 
+    [SerializeField] private GameObject openingOverlay;
+
     [SerializeField] private WorkdaySessionDriver sessionDriver;
     [SerializeField] private DocumentInspectionView documentView;
 
@@ -55,6 +57,8 @@ public sealed class ViewModeController : MonoBehaviour
     public bool IsSessionMenuOpen => !sessionDriver.HasBegunShift || sessionMenuOpen;
 
     public bool CanUseSessionMenuInput => CanUseViewInput && IsSessionMenuOpen && !waitingForPointerRelease;
+
+    public event System.Action TerminalMenuRequested;
 
     private bool initialized;
     private bool hasFocus;
@@ -109,7 +113,7 @@ public sealed class ViewModeController : MonoBehaviour
             return;
         }
 
-        if (actions == null || viewCamera == null || playerLook == null || officeHud == null || desktopRoot == null || uiInputModule == null || sessionDriver == null || documentView == null || windowManager == null)
+        if (actions == null || viewCamera == null || playerLook == null || officeHud == null || desktopRoot == null || uiInputModule == null || sessionDriver == null || documentView == null || windowManager == null || openingOverlay == null)
         {
             Debug.LogError("Assign the camera, look, input and UI references.", this);
             enabled = false;
@@ -130,6 +134,8 @@ public sealed class ViewModeController : MonoBehaviour
         playerLook.Initialize(viewCamera.transform.localRotation);
 
         initialized = true;
+
+        openingOverlay.SetActive(true);
     }
 
     private void Update()
@@ -193,6 +199,12 @@ public sealed class ViewModeController : MonoBehaviour
 
         if (!CanUseOfficeInput)
             return;
+
+        if (sessionDriver.Session.Workday.IsTerminal && back.WasPressedThisFrame())
+        {
+            TerminalMenuRequested?.Invoke();
+            return;
+        }
 
         viewCamera.transform.localRotation = playerLook.Evaluate(LookDelta);
     }

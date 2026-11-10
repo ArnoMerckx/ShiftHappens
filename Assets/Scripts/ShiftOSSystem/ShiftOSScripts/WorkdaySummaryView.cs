@@ -11,6 +11,11 @@ public sealed class WorkdaySummaryView : MonoBehaviour
     [SerializeField] private TMP_Text titleLabel;
     [SerializeField] private TMP_Text bodyLabel;
 
+    [SerializeField] private ViewModeController viewModes;
+    [SerializeField] private GameObject terminalPanel;
+
+    private bool terminalMenuShown;
+
     private WorkdaySession session;
     private bool refreshPending;
 
@@ -20,6 +25,13 @@ public sealed class WorkdaySummaryView : MonoBehaviour
         {
             throw new InvalidOperationException("Assign the session driver, child panel and labels.");
         }
+
+        if (viewModes == null || terminalPanel == null || terminalPanel == gameObject || terminalPanel == panel || !terminalPanel.transform.IsChildOf(transform))
+        {
+            throw new InvalidOperationException("Assign view modes and a separate child terminal panel.");
+        }
+
+        terminalPanel.SetActive(false);
 
         panel.SetActive(false);
     }
@@ -42,6 +54,17 @@ public sealed class WorkdaySummaryView : MonoBehaviour
 
     private void OnDisable()
     {
+        if (viewModes != null)
+        {
+            viewModes.TerminalMenuRequested -= ShowTerminalMenu;
+
+            if (terminalPanel != null && terminalPanel.activeSelf)
+            {
+                terminalPanel.SetActive(false);
+                viewModes.SetSessionMenuOpen(false);
+            }
+        }
+
         if (session == null)
             return;
 
@@ -51,6 +74,9 @@ public sealed class WorkdaySummaryView : MonoBehaviour
 
     private void ConnectAndRefresh()
     {
+        viewModes.TerminalMenuRequested -= ShowTerminalMenu;
+        viewModes.TerminalMenuRequested += ShowTerminalMenu;
+
         session.Workday.StateChanged -= RequestRefresh;
         session.Workday.StateChanged += RequestRefresh;
 
@@ -103,6 +129,12 @@ public sealed class WorkdaySummaryView : MonoBehaviour
         }
 
         panel.SetActive(true);
+
+        if (workday.IsTerminal && !terminalMenuShown)
+        {
+            terminalMenuShown = true;
+            ShowTerminalMenu();
+        }
     }
 
     private static int Count(IReadOnlyList<IncidentSummary> incidents, IncidentStatus status)
@@ -116,5 +148,25 @@ public sealed class WorkdaySummaryView : MonoBehaviour
         }
 
         return count;
+    }
+
+    public void ShowTerminalMenu()
+    {
+        if (session == null || !session.Workday.IsTerminal)
+            return;
+
+        terminalPanel.SetActive(true);
+        viewModes.SetSessionMenuOpen(true);
+    }
+
+    public void ReviewReports()
+    {
+        if (session == null || !session.Workday.IsTerminal || !terminalPanel.activeInHierarchy || !viewModes.CanUseSessionMenuInput)
+        {
+            return;
+        }
+
+        terminalPanel.SetActive(false);
+        viewModes.SetSessionMenuOpen(false);
     }
 }
