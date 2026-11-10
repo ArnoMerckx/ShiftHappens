@@ -87,17 +87,21 @@ public class EmployeeRosterTests
     }
 
     [Test]
-    public void PublicMetadataApi_ContainsOnlyReadOnlyIdAndName()
+    public void PublicMetadataApi_ContainsOnlyReadOnlyProfileFields()
     {
         var type = typeof(EmployeeViewData);
         var names = new List<string>();
         foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
             names.Add(property.Name);
-            Assert.That(property.PropertyType, Is.EqualTo(typeof(string)));
+            Assert.That(property.PropertyType, Is.EqualTo(
+                property.Name == "Role" ? typeof(EmployeeRole) : typeof(string)));
             Assert.That(property.GetSetMethod(true), Is.Null);
         }
-        CollectionAssert.AreEquivalent(new[] { "EmployeeId", "DisplayName" }, names);
+        CollectionAssert.AreEquivalent(new[]
+        {
+            "EmployeeId", "DisplayName", "Role", "Bio", "InterestsAndExperience"
+        }, names);
         Assert.That(type.GetFields(BindingFlags.Public | BindingFlags.Instance), Is.Empty);
         Assert.That(typeof(UnityEngine.Object).IsAssignableFrom(type), Is.False);
     }

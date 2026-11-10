@@ -143,7 +143,7 @@ public sealed class DayScheduleData
             if (!byId.TryGetValue(id, out EmployeeViewData employee))
                 throw new ArgumentException("Employee presentation must match the day roster.", nameof(employeePresentation));
 
-            roster.Add(new EmployeeViewData(id, employee.DisplayName));
+            roster.Add(new EmployeeViewData(id, employee.DisplayName, employee.Role, employee.Bio, employee.InterestsAndExperience));
         }
 
         return roster;
