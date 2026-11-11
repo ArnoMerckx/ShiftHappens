@@ -15,6 +15,8 @@ public class ApprovedScheduleRecordDefinition : ScriptableObject
     [SerializeField, Min(0)] private int priority;
     [SerializeField] private bool requiresPresence;
 
+    [SerializeField] private bool blocksDelegation;
+
     public ApprovedScheduleRecord ToRecord()
     {
         if (employee == null)
@@ -27,6 +29,6 @@ public class ApprovedScheduleRecordDefinition : ScriptableObject
             throw new InvalidOperationException("An approved schedule record requires a location reference.");
         }
 
-        return new ApprovedScheduleRecord(recordId, employee.EmployeeId, location.LocationId, new TimeRange(dayIndex, startMinute, endMinute), priority, requiresPresence);
+        return new ApprovedScheduleRecord(recordId, employee.EmployeeId, location.LocationId, new TimeRange(dayIndex, startMinute, endMinute), priority, requiresPresence, blocksDelegation);
     }
 }

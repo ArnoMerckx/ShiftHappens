@@ -126,6 +126,12 @@ public class EmployeeRosterTests
         CollectionAssert.AreEqual(new[] { "steve", "karen" }, Ids(schedule.EmployeeRoster));
         Assert.That(schedule.EmployeeRoster[0].DisplayName, Is.EqualTo("steve"));
         Assert.That(schedule.EmployeeRoster[1].DisplayName, Is.EqualTo("karen"));
+        foreach (var row in schedule.EmployeeRoster)
+        {
+            Assert.That(row.Role, Is.EqualTo(EmployeeRole.None));
+            Assert.That(row.Bio, Is.Empty);
+            Assert.That(row.InterestsAndExperience, Is.Empty);
+        }
     }
 
     [Test]
@@ -233,6 +239,86 @@ public class EmployeeRosterTests
         CollectionAssert.AreEqual(data.ScheduleData.EmployeeIds, Ids(rows));
     }
 
+    [Test]
+    public void AuthoredProfiles_ReachSessionInDayOrder()
+    {
+        var steve = Employee("steve", "Steve");
+        SetField(steve, "role", EmployeeRole.Dispatch);
+        SetField(steve, "jobBio", "Handles dispatch deliveries.");
+        SetField(steve, "interestsAndExperience", "Builds PCs outside work.");
+
+        var karen = Employee("karen", "Karen");
+        SetField(karen, "role", EmployeeRole.Administration);
+        SetField(karen, "jobBio", "Organizes office paperwork.");
+        SetField(karen, "interestsAndExperience", "Keeps collection records.");
+
+        var session = new WorkdaySession(AuthoredDay(steve, karen).GetData());
+        var rows = session.GetEmployeeRoster();
+
+        CollectionAssert.AreEqual(new[] { "steve", "karen" }, Ids(rows));
+        Assert.That(rows[0].Role, Is.EqualTo(EmployeeRole.Dispatch));
+        Assert.That(rows[0].Bio, Is.EqualTo("Handles dispatch deliveries."));
+        Assert.That(rows[0].InterestsAndExperience, Is.EqualTo("Builds PCs outside work."));
+        Assert.That(rows[1].Role, Is.EqualTo(EmployeeRole.Administration));
+        Assert.That(rows[1].Bio, Is.EqualTo("Organizes office paperwork."));
+        Assert.That(rows[1].InterestsAndExperience, Is.EqualTo("Keeps collection records."));
+    }
+
+    [Test]
+    public void ReorderedPresentation_KeepsEachProfileWithItsEmployeeId()
+    {
+        var rows = new List<EmployeeViewData>
+        {
+            new EmployeeViewData("karen", "Karen", EmployeeRole.Administration,
+                "Karen bio", "Karen experience"),
+            new EmployeeViewData("steve", "Steve", EmployeeRole.Dispatch,
+                "Steve bio", "Steve experience")
+        };
+        var schedule = Schedule(new List<string> { "steve", "karen" }, rows);
+        rows.Clear();
+
+        CollectionAssert.AreEqual(new[] { "steve", "karen" }, Ids(schedule.EmployeeRoster));
+        Assert.That(schedule.EmployeeRoster[0].Role, Is.EqualTo(EmployeeRole.Dispatch));
+        Assert.That(schedule.EmployeeRoster[0].Bio, Is.EqualTo("Steve bio"));
+        Assert.That(schedule.EmployeeRoster[0].InterestsAndExperience, Is.EqualTo("Steve experience"));
+        Assert.That(schedule.EmployeeRoster[1].Role, Is.EqualTo(EmployeeRole.Administration));
+        Assert.That(schedule.EmployeeRoster[1].Bio, Is.EqualTo("Karen bio"));
+        Assert.That(schedule.EmployeeRoster[1].InterestsAndExperience, Is.EqualTo("Karen experience"));
+    }
+
+    [Test]
+    public void ProfileSnapshot_SurvivesAssetChangesAndDestruction()
+    {
+        var employee = Employee("steve", "Steve");
+        SetField(employee, "role", EmployeeRole.Dispatch);
+        SetField(employee, "jobBio", "Original bio");
+        SetField(employee, "interestsAndExperience", "Original experience");
+        var day = AuthoredDay(employee);
+        DayData original = day.GetData();
+        var session = new WorkdaySession(original);
+
+        SetField(employee, "role", EmployeeRole.IT);
+        SetField(employee, "jobBio", "Changed bio");
+        SetField(employee, "interestsAndExperience", "Changed experience");
+        var updated = new WorkdaySession(day.GetData()).GetEmployeeRoster()[0];
+        Assert.That(updated.Role, Is.EqualTo(EmployeeRole.IT));
+        Assert.That(updated.Bio, Is.EqualTo("Changed bio"));
+        Assert.That(updated.InterestsAndExperience, Is.EqualTo("Changed experience"));
+
+        UnityEngine.Object.DestroyImmediate(day);
+        UnityEngine.Object.DestroyImmediate(employee);
+        session.GetEmployeeRoster().Clear();
+
+        var saved = original.ScheduleData.EmployeeRoster[0];
+        var live = session.GetEmployeeRoster()[0];
+        foreach (var row in new[] { saved, live })
+        {
+            Assert.That(row.Role, Is.EqualTo(EmployeeRole.Dispatch));
+            Assert.That(row.Bio, Is.EqualTo("Original bio"));
+            Assert.That(row.InterestsAndExperience, Is.EqualTo("Original experience"));
+        }
+    }
+
     [TestCase(null)]
     [TestCase("")]
     [TestCase(" \t")]
@@ -310,7 +396,7 @@ public class EmployeeRosterTests
     }
 
     [Test]
-    public void ActualMonday_ExposesOnlyItsFiveExistingEmployeeIdsAndNames()
+    public void ActualMonday_PreservesFiveEmployeeIdentitiesAndAuthoredProfiles()
     {
         var day = AssetDatabase.LoadAssetAtPath<DayDefinition>(
             "Assets/Scripts/CompanySystem/CompanyObjects/Days/Monday.asset");
@@ -328,6 +414,12 @@ public class EmployeeRosterTests
         {
             Assert.That(expected.ContainsKey(row.EmployeeId), Is.True);
             Assert.That(row.DisplayName, Is.EqualTo(expected[row.EmployeeId]));
+            var employee = AssetDatabase.LoadAssetAtPath<EmployeeDefinition>(
+                $"Assets/Scripts/CompanySystem/CompanyObjects/Employees/{expected[row.EmployeeId]}.asset");
+            Assert.That(employee, Is.Not.Null);
+            Assert.That(row.Role, Is.EqualTo(employee.Role));
+            Assert.That(row.Bio, Is.EqualTo(employee.Bio));
+            Assert.That(row.InterestsAndExperience, Is.EqualTo(employee.InterestsAndExperience));
         }
     }
 }

@@ -15,3 +15,6 @@ MonoBehaviour:
   employeeId: steve
   displayName: Steve
   role: 4
+  jobBio: Moves dispatch boxes and equipment safely.
+  interestsAndExperience: Outside work, he builds PCs and troubleshoots friends' desktop computers.
+  capabilities: 0200000001000000i

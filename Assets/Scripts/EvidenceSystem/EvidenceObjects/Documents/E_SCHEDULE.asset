@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShiftHappens.Runtime::EvidenceDefinition
   evidenceId: E_SCHEDULE
   displayName: Monday - Published Assignments
-  bodyText: "MONDAY \u2014 PUBLISHED ASSIGNMENTS\n\nBob: Break room, 09:30\u201309:45.\nBob: Printer area, 10:30\u201310:45.\nBob: Supply closet, 13:30\u201313:45.\nAlice: Accounts office, 09:00\u201312:00.\nDave: IT office, 09:00\u201312:00.\nSteve: Dispatch area, 13:30\u201313:45.\nKaren: Supply closet, 13:30\u201313:45.\n\nUnlisted periods have no published assignment."
+  bodyText: "MONDAY \u2014 PUBLISHED ASSIGNMENTS\n\nBob: Break room, 09:30\u201309:45.\nBob: Printer area, 10:30\u201310:45.\nBob: Supply closet, 13:30\u201313:45.\nAlice: Accounts office, 09:00\u201312:00.\nDave: IT office, 09:00\u201312:00.\nSteve: Dispatch area, 13:30\u201313:45.\nKaren: Supply closet, 13:30\u201313:45.\n\nUnlisted periods have no published assignment.\n\nHELP AVAILABILITY\n\nAll five employees work 09:00\u201317:00 and can normally help during that shift. Department assignments do not by themselves prevent helping. Approved absences, meetings and noninterruptible duties take precedence; check the current notices in InWatch."
   source: 2
   availableDayIndex: 0
   availableMinute: 540

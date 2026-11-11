@@ -7,7 +7,9 @@ public sealed class DayData
     public EvidenceDatabase EvidenceDatabase { get; }
     public IReadOnlyList<DayIncidentPlan> Incidents { get; }
 
-    public DayData(DayScheduleData scheduleData, List<EvidenceDefinition> evidence, List<DayIncidentPlan> incidents)
+    public IReadOnlyList<DayRequestPlan> Requests { get; }
+
+    public DayData(DayScheduleData scheduleData, List<EvidenceDefinition> evidence, List<DayIncidentPlan> incidents, List<DayRequestPlan> requests = null)
     {
         if (scheduleData == null)
             throw new ArgumentNullException(nameof(scheduleData));
@@ -64,5 +66,59 @@ public sealed class DayData
         ScheduleData = scheduleData;
         EvidenceDatabase = database;
         Incidents = incidentCopy.AsReadOnly();
+        Requests = BuildRequests(requests, scheduleData).AsReadOnly();
+    }
+
+    private static List<DayRequestPlan> BuildRequests(List<DayRequestPlan> requests, DayScheduleData scheduleData)
+    {
+        var copy = new List<DayRequestPlan>();
+
+        if (requests == null)
+            return copy;
+
+        WorkdaySettings settings = scheduleData.Settings;
+        var employeeIds = new HashSet<string>(scheduleData.EmployeeIds, StringComparer.Ordinal);
+        var instanceIds = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var plan in requests)
+        {
+            if (plan == null)
+                throw new ArgumentException("Request plans cannot contain null.", nameof(requests));
+
+            if (!instanceIds.Add(plan.InstanceId))
+                throw new ArgumentException($"Duplicate request instance ID: {plan.InstanceId}", nameof(requests));
+
+            if (!employeeIds.Contains(plan.Request.RequesterId))
+                throw new ArgumentException($"Unknown requester: {plan.Request.RequesterId}", nameof(requests));
+
+            if (plan.DeliveryAt.DayIndex != settings.DayIndex || plan.DeliveryAt.TotalMilliseconds < settings.OpensAt.TotalMilliseconds || plan.DeliveryAt.TotalMilliseconds >= settings.ClosesAt.TotalMilliseconds)
+            {
+                throw new ArgumentException("Request delivery must occur during this workday.", nameof(requests));
+            }
+
+            var profileEmployees = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (var entry in plan.Profile.RankedEmployees)
+                profileEmployees.Add(entry.EmployeeId);
+
+            profileEmployees.UnionWith(plan.Profile.UnsuitableEmployeeIds);
+
+            if (!profileEmployees.SetEquals(employeeIds))
+                throw new ArgumentException("A request profile must classify exactly the day's roster.", nameof(requests));
+
+            if (plan.HelpWindow.HasValue)
+            {
+                TimeRange window = plan.HelpWindow.Value;
+
+                if (window.StartMinute < settings.WorkHours.StartMinute || window.EndMinute > settings.WorkHours.EndMinute || plan.CutoffAt.Value.TotalMilliseconds >= settings.ClosesAt.TotalMilliseconds)
+                {
+                    throw new ArgumentException("The help window must fit work hours and its cutoff must precede closing.", nameof(requests));
+                }
+            }
+
+            copy.Add(plan);
+        }
+
+        return copy;
     }
 }

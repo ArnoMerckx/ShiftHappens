@@ -5,6 +5,45 @@ using UnityEditor;
 
 public class CompanyAssetTests
 {
+    [TestCase("Alice", "alice", EmployeeRole.Accounts,
+        EmployeeCapability.Accounts, EmployeeCapability.DataAnalysis)]
+    [TestCase("Bob", "bob", EmployeeRole.Operations,
+        EmployeeCapability.EquipmentHandling, EmployeeCapability.EquipmentMaintenance)]
+    [TestCase("Dave", "dave", EmployeeRole.IT,
+        EmployeeCapability.ComputerSupport, EmployeeCapability.None)]
+    [TestCase("Karen", "karen", EmployeeRole.Administration,
+        EmployeeCapability.Administration, EmployeeCapability.EventCoordination)]
+    [TestCase("Steve", "steve", EmployeeRole.Dispatch,
+        EmployeeCapability.EquipmentHandling, EmployeeCapability.ComputerSupport)]
+    public void AuthoredEmployee_HasReadableProfileAndAgreedCapabilities(
+        string filename, string employeeId, EmployeeRole role,
+        EmployeeCapability first, EmployeeCapability second)
+    {
+        string path = $"Assets/Scripts/CompanySystem/CompanyObjects/Employees/{filename}.asset";
+        var employee = AssetDatabase.LoadAssetAtPath<EmployeeDefinition>(path);
+        Assert.That(employee, Is.Not.Null, path);
+        Assert.That(employee.EmployeeId, Is.EqualTo(employeeId), path);
+        Assert.That(employee.DisplayName, Is.EqualTo(filename), path);
+        Assert.That(employee.Role, Is.EqualTo(role), path);
+        Assert.That(string.IsNullOrWhiteSpace(employee.Bio), Is.False, path);
+        Assert.That(string.IsNullOrWhiteSpace(employee.InterestsAndExperience), Is.False, path);
+
+        var expected = new List<EmployeeCapability> { first };
+        if (second != EmployeeCapability.None)
+            expected.Add(second);
+
+        var actual = new List<EmployeeCapability>();
+        var seen = new HashSet<EmployeeCapability>();
+        foreach (var capability in employee.Capabilities)
+        {
+            Assert.That(Enum.IsDefined(typeof(EmployeeCapability), capability), Is.True, path);
+            Assert.That(capability, Is.Not.EqualTo(EmployeeCapability.None), path);
+            Assert.That(seen.Add(capability), Is.True, $"Duplicate capability at {path}");
+            actual.Add(capability);
+        }
+        CollectionAssert.AreEquivalent(expected, actual, path);
+    }
+
     [Test]
     public void EmployeeAssets_HaveValidUniqueIdsAndRoles()
     {

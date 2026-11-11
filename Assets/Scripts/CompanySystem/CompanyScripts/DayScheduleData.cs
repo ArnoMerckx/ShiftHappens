@@ -10,7 +10,9 @@ public sealed class DayScheduleData
 
     public IReadOnlyList<EmployeeViewData> EmployeeRoster { get; }
 
-    public DayScheduleData(WorkdaySettings settings, List<string> employeeIds,List<ApprovedScheduleRecord> worldApprovedRecords, List<ApprovedScheduleRecord> hrApprovedRecords, List<Claim> hrKnownClaims, List<EmployeeViewData> employeePresentation = null)
+    public IReadOnlyList<EmployeeAvailability> OrdinaryAvailability { get; }
+
+    public DayScheduleData(WorkdaySettings settings, List<string> employeeIds,List<ApprovedScheduleRecord> worldApprovedRecords, List<ApprovedScheduleRecord> hrApprovedRecords, List<Claim> hrKnownClaims, List<EmployeeViewData> employeePresentation = null, List<EmployeeAvailability> ordinaryAvailability = null)
     {
         if (settings == null)
             throw new ArgumentNullException(nameof(settings));
@@ -43,6 +45,8 @@ public sealed class DayScheduleData
 
         var worldCopy = new List<ApprovedScheduleRecord>();
         var worldById = new Dictionary<string, ApprovedScheduleRecord>(StringComparer.Ordinal);
+
+        OrdinaryAvailability = BuildOrdinaryAvailability(ordinaryAvailability, employeeSet, settings).AsReadOnly();
 
         foreach (var record in worldApprovedRecords)
         {
@@ -92,11 +96,73 @@ public sealed class DayScheduleData
         ValidateSchedule(worldCopy, settings.DayIndex);
         ValidateSchedule(new List<ApprovedScheduleRecord>(knowledge.ApprovedRecords), settings.DayIndex);
 
+        ValidateDelegationCommitments(worldCopy, employeeCopy, settings.DayIndex);
+
         Settings = settings;
         EmployeeIds = employeeCopy.AsReadOnly();
         WorldApprovedRecords = worldCopy.AsReadOnly();
         EmployeeRoster = BuildEmployeeRoster(employeeCopy, employeePresentation).AsReadOnly();
         HrKnowledge = knowledge;
+    }
+
+    private static List<EmployeeAvailability> BuildOrdinaryAvailability(List<EmployeeAvailability> entries, HashSet<string> employeeIds, WorkdaySettings settings)
+    {
+        var copy = new List<EmployeeAvailability>();
+
+        if (entries == null)
+            return copy;
+
+        foreach (var entry in entries)
+        {
+            if (entry == null)
+                throw new ArgumentException("Availability entries cannot contain null.", nameof(entries));
+
+            if (!employeeIds.Contains(entry.EmployeeId))
+                throw new ArgumentException($"Unknown employee in availability: {entry.EmployeeId}", nameof(entries));
+
+            TimeRange period = entry.Period;
+
+            if (period.DayIndex != settings.DayIndex)
+                throw new ArgumentException("Availability must belong to this day.", nameof(entries));
+
+            if (period.StartMinute < settings.WorkHours.StartMinute || period.EndMinute > settings.WorkHours.EndMinute)
+            {
+                throw new ArgumentException("Availability must be within work hours.", nameof(entries));
+            }
+
+            copy.Add(entry);
+        }
+
+        return copy;
+    }
+
+    private static void ValidateDelegationCommitments(List<ApprovedScheduleRecord> records, List<string> employeeIds, int dayIndex)
+    {
+        var fullDay = new TimeRange(dayIndex, 0, 1440);
+
+        foreach (string employeeId in employeeIds)
+        {
+            var segments = ScheduleResolver.ResolveSegments(employeeId, fullDay, records);
+
+            foreach (var segment in segments)
+            {
+                bool? blocksDelegation = null;
+
+                foreach (var record in segment.WinningRecords)
+                {
+                    if (blocksDelegation.HasValue &&
+                        blocksDelegation.Value != record.BlocksDelegation)
+                    {
+                        throw new InvalidOperationException(
+                            $"Conflicting delegation commitments for {employeeId} " +
+                            $"on day {dayIndex}, " +
+                            $"minute {segment.Period.StartMinute}.");
+                    }
+
+                    blocksDelegation = record.BlocksDelegation;
+                }
+            }
+        }
     }
 
     private static void ValidateSchedule(List<ApprovedScheduleRecord> records, int dayIndex)

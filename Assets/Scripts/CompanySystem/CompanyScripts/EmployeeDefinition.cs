@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "NewEmployee", menuName = "Shift Happens/Company/Employee")]
 public class EmployeeDefinition : ScriptableObject
@@ -9,7 +10,7 @@ public class EmployeeDefinition : ScriptableObject
     [SerializeField] private EmployeeRole role;
 
     [SerializeField, TextArea(3, 6)]
-    private string bio = string.Empty;
+    private string jobBio = string.Empty;
 
     [SerializeField, TextArea(2, 5)]
     private string interestsAndExperience = string.Empty;
@@ -21,7 +22,7 @@ public class EmployeeDefinition : ScriptableObject
     public string DisplayName => displayName;
     public EmployeeRole Role => role;
 
-    public string Bio => bio;
+    public string Bio => jobBio;
     public string InterestsAndExperience => interestsAndExperience;
 
     public IReadOnlyList<EmployeeCapability> Capabilities => capabilities.AsReadOnly();

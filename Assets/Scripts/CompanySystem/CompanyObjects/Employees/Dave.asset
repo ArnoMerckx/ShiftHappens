@@ -15,3 +15,6 @@ MonoBehaviour:
   employeeId: dave
   displayName: Dave
   role: 3
+  jobBio: Provides the office's professional computer support, diagnosing desktop and software faults.
+  interestsAndExperience: His approved on-site assignments can require his full attention.
+  capabilities: 01000000i

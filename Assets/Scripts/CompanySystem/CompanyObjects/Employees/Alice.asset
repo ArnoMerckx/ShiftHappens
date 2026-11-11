@@ -15,3 +15,6 @@ MonoBehaviour:
   employeeId: alice
   displayName: Alice
   role: 2
+  jobBio: Checks invoices, reconciles accounts and keeps financial records accurate.
+  interestsAndExperience: Enjoys finding patterns in spreadsheets and turning messy figures into clear reports. Relies on IT colleagues for computer faults.
+  capabilities: 0400000005000000i

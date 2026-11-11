@@ -20,3 +20,4 @@ MonoBehaviour:
   endMinute: 590
   priority: 100
   requiresPresence: 1
+  blocksDelegation: 1

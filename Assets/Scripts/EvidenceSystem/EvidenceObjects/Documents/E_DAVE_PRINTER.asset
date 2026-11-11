@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShiftHappens.Runtime::EvidenceDefinition
   evidenceId: E_DAVE_PRINTER
   displayName: Dave - Printer Inspection
-  bodyText: "Dave is assigned to inspect the printer physically on Monday,\n10:30\u201310:45. This replaces his general IT-office assignment\nfor that period. HR holds the maintenance assignment."
+  bodyText: "Dave is assigned to inspect the printer physically on Monday,\n10:30\u201310:45. This replaces his general IT-office assignment\nfor that period. HR holds the maintenance assignment.\n\nThis inspection cannot be interrupted for other help requests."
   source: 1
   availableDayIndex: 0
   availableMinute: 540

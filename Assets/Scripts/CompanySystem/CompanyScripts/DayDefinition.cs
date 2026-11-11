@@ -21,6 +21,9 @@ public class DayDefinition : ScriptableObject
     [SerializeField]
     private List<EmployeeDefinition> employees = new List<EmployeeDefinition>();
 
+    [SerializeField] 
+    private List<DayAvailabilityEntry> ordinaryAvailability = new List<DayAvailabilityEntry>();
+
     [SerializeField]
     private List<EvidenceDefinition> evidence = new List<EvidenceDefinition>();
 
@@ -35,6 +38,9 @@ public class DayDefinition : ScriptableObject
 
     [SerializeField]
     private List<DayIncidentEntry> incidents = new List<DayIncidentEntry>();
+
+    [SerializeField]
+    private List<DayRequestEntry> requests = new List<DayRequestEntry>();
 
     public string DayId => dayId;
     public string DisplayName => displayName;
@@ -52,7 +58,7 @@ public class DayDefinition : ScriptableObject
     {
         WorkdaySettings settings = GetSettings();
 
-        if (employees == null || worldApprovedRecords == null || hrApprovedRecords == null || hrKnownClaims == null)
+        if (employees == null || worldApprovedRecords == null || hrApprovedRecords == null || hrKnownClaims == null || ordinaryAvailability == null)
         {
             throw new InvalidOperationException("Day schedule collections cannot be null.");
         }
@@ -68,7 +74,7 @@ public class DayDefinition : ScriptableObject
             }
 
             employeeIds.Add(employee.EmployeeId);
-            employeePresentation.Add(new EmployeeViewData(employee.EmployeeId, employee.DisplayName));
+            employeePresentation.Add(new EmployeeViewData(employee.EmployeeId, employee.DisplayName, employee.Role, employee.Bio, employee.InterestsAndExperience));
         }
 
         var worldRecords = new List<ApprovedScheduleRecord>();
@@ -116,17 +122,26 @@ public class DayDefinition : ScriptableObject
 
             knownClaims.Add(definition.ToClaim());
         }
+        var availabilityRecords = new List<EmployeeAvailability>();
 
-        return new DayScheduleData(settings, employeeIds, worldRecords, hrRecords, knownClaims, employeePresentation);
+        foreach (var entry in ordinaryAvailability)
+        {
+            if (entry == null)
+                throw new InvalidOperationException("Day availability cannot contain missing entries.");
+
+            availabilityRecords.Add(entry.ToAvailability(settings.DayIndex));
+        }
+
+        return new DayScheduleData(settings, employeeIds, worldRecords, hrRecords, knownClaims, employeePresentation, availabilityRecords);
     }
 
     public DayData GetData()
     {
         DayScheduleData scheduleData = GetScheduleData();
 
-        if (incidents == null)
+        if (incidents == null || requests == null)
         {
-            throw new InvalidOperationException("Day incidents cannot be null.");
+            throw new InvalidOperationException("Day incident and request collections cannot be null.");
         }
 
         var plans = new List<DayIncidentPlan>();
@@ -141,6 +156,16 @@ public class DayDefinition : ScriptableObject
             plans.Add(new DayIncidentPlan(entry.Definition, entry.ToSchedule(scheduleData.Settings.DayIndex)));
         }
 
-        return new DayData(scheduleData, evidence, plans);
+        var requestPlans = new List<DayRequestPlan>();
+
+        foreach (var entry in requests)
+        {
+            if (entry == null)
+                throw new InvalidOperationException("Day requests cannot contain missing entries.");
+
+            requestPlans.Add(entry.ToPlan(scheduleData.Settings.DayIndex));
+        }
+
+        return new DayData(scheduleData, evidence, plans, requestPlans);
     }
 }

@@ -24,6 +24,22 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a5fbfdd970b56f44389be5a2d8b0a67e, type: 2}
   - {fileID: 11400000, guid: 1e80402a7f0efa846b23f68a91dbdacd, type: 2}
   - {fileID: 11400000, guid: 548c0e9751c106248b8d5c3bad7eeb8d, type: 2}
+  ordinaryAvailability:
+  - employee: {fileID: 11400000, guid: 853e01b36d3d67b4b88dcbd66430c5dc, type: 2}
+    startMinute: 540
+    endMinute: 1020
+  - employee: {fileID: 11400000, guid: 1c1502d536ba21847834b7fb5cdeda2c, type: 2}
+    startMinute: 540
+    endMinute: 1020
+  - employee: {fileID: 11400000, guid: a5fbfdd970b56f44389be5a2d8b0a67e, type: 2}
+    startMinute: 540
+    endMinute: 1020
+  - employee: {fileID: 11400000, guid: 1e80402a7f0efa846b23f68a91dbdacd, type: 2}
+    startMinute: 540
+    endMinute: 1020
+  - employee: {fileID: 11400000, guid: 548c0e9751c106248b8d5c3bad7eeb8d, type: 2}
+    startMinute: 540
+    endMinute: 1020
   evidence:
   - {fileID: 11400000, guid: eb57a2a069ea75b42b5d123ac393fbae, type: 2}
   - {fileID: 11400000, guid: 5d3bef4b1ba26264ba46ef6b7cbfdec6, type: 2}
@@ -66,3 +82,22 @@ MonoBehaviour:
     occurrenceEndMinute: 820
     deliveryMinute: 840
     deadlineMinute: 900
+  requests:
+  - instanceId: D0R1
+    request: {fileID: 11400000, guid: 7c6d0598b9cbb3b47842b61e86f4ce64, type: 2}
+    profile: {fileID: 11400000, guid: a380b78b11e1edf4e9a4bc26533269e2, type: 2}
+    deliveryMinute: 595
+    hasFixedWindow: 1
+    helpStartMinute: 630
+    helpEndMinute: 645
+    useEarlierCutoff: 0
+    cutoffMinute: 0
+  - instanceId: D0R2
+    request: {fileID: 11400000, guid: 4c683104beb5ce646aa19a2fddd1afc7, type: 2}
+    profile: {fileID: 11400000, guid: 2c267b55fe08f7c41b08d38e8e1b98eb, type: 2}
+    deliveryMinute: 860
+    hasFixedWindow: 0
+    helpStartMinute: 0
+    helpEndMinute: 0
+    useEarlierCutoff: 0
+    cutoffMinute: 0

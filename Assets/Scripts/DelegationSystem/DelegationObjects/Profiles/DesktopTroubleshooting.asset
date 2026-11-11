@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2556ed4cbe8ca49844d1ebfa1a6818, type: 3}
+  m_Name: DesktopTroubleshooting
+  m_EditorClassIdentifier: ShiftHappens.Runtime::RequestProfileDefinition
+  profileId: desktop_troubleshooting
+  requiredCapability: 1
+  rankedEmployees:
+  - employee: {fileID: 11400000, guid: a5fbfdd970b56f44389be5a2d8b0a67e, type: 2}
+    tier: 0
+  - employee: {fileID: 11400000, guid: 548c0e9751c106248b8d5c3bad7eeb8d, type: 2}
+    tier: 1
+  unsuitableEmployees:
+  - {fileID: 11400000, guid: 853e01b36d3d67b4b88dcbd66430c5dc, type: 2}
+  - {fileID: 11400000, guid: 1c1502d536ba21847834b7fb5cdeda2c, type: 2}
+  - {fileID: 11400000, guid: 1e80402a7f0efa846b23f68a91dbdacd, type: 2}

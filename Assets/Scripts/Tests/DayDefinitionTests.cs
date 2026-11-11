@@ -142,6 +142,7 @@ public class DayDefinitionTests
         Assert.That(record.Period.EndMinute, Is.EqualTo(end));
         Assert.That(record.Priority, Is.EqualTo(100));
         Assert.That(record.RequiresPresence, Is.EqualTo(required));
+        Assert.That(record.BlocksDelegation, Is.True);
     }
 
     [Test]
@@ -246,7 +247,8 @@ public class DayDefinitionTests
             foreach (string field in new[]
             {
                 "employees", "evidence", "worldApprovedRecords",
-                "hrApprovedRecords", "hrKnownClaims", "incidents"
+                "hrApprovedRecords", "hrKnownClaims", "incidents",
+                "ordinaryAvailability", "requests"
             })
                 data.FindProperty(field).arraySize = 0;
         });
@@ -258,12 +260,16 @@ public class DayDefinitionTests
         Assert.That(before.ScheduleData.HrKnowledge.KnownClaims.Count, Is.EqualTo(4));
         Assert.That(before.EvidenceDatabase.All.Count, Is.EqualTo(7));
         Assert.That(before.Incidents.Count, Is.EqualTo(3));
+        Assert.That(before.ScheduleData.OrdinaryAvailability.Count, Is.EqualTo(5));
+        Assert.That(before.Requests.Count, Is.EqualTo(2));
         Assert.That(after.ScheduleData.EmployeeIds, Is.Empty);
         Assert.That(after.ScheduleData.WorldApprovedRecords, Is.Empty);
         Assert.That(after.ScheduleData.HrKnowledge.ApprovedRecords, Is.Empty);
         Assert.That(after.ScheduleData.HrKnowledge.KnownClaims, Is.Empty);
         Assert.That(after.EvidenceDatabase.All, Is.Empty);
         Assert.That(after.Incidents, Is.Empty);
+        Assert.That(after.ScheduleData.OrdinaryAvailability, Is.Empty);
+        Assert.That(after.Requests, Is.Empty);
         Assert.That(Load<DayDefinition>(MondayPath).GetData().Incidents.Count,
             Is.EqualTo(3));
     }

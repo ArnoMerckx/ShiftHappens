@@ -9,7 +9,9 @@ public sealed class ApprovedScheduleRecord
     public int Priority { get; }
     public bool RequiresPresence { get; }
 
-    public ApprovedScheduleRecord(string recordId, string employeeId, string locationId, TimeRange period, int priority, bool requiresPresence)
+    public bool BlocksDelegation { get; }
+
+    public ApprovedScheduleRecord(string recordId, string employeeId, string locationId, TimeRange period, int priority, bool requiresPresence, bool blocksDelegation = false)
     {
         if (string.IsNullOrWhiteSpace(recordId))
             throw new ArgumentException("Record ID is required.", nameof(recordId));
@@ -32,5 +34,6 @@ public sealed class ApprovedScheduleRecord
         Period = period;
         Priority = priority;
         RequiresPresence = requiresPresence;
+        BlocksDelegation = blocksDelegation;
     }
 }

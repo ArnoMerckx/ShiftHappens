@@ -15,3 +15,6 @@ MonoBehaviour:
   employeeId: bob
   displayName: Bob
   role: 1
+  jobBio: Handles office equipment deliveries and regularly moves and sets up bulky items.
+  interestsAndExperience: Knows how to lift and transport equipment safely.
+  capabilities: 0200000007000000i
