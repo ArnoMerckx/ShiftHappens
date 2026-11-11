@@ -143,7 +143,7 @@ public class WorkdaySessionSuccessTests
             new GameTime(0, 855).TotalMilliseconds
         }, reviewedAt);
         Assert.That(session.Workday.State, Is.EqualTo(WorkdayState.Completed));
-        Assert.That(session.Progress.Credibility, Is.EqualTo(100));
+        Assert.That(session.Progress.Credibility, Is.EqualTo(80));
         Assert.That(session.Submissions.PendingReviews, Is.Empty);
         Assert.That(session.Progress.MissedDeadlines, Is.Empty);
         Assert.That(overdue, Is.Zero);
@@ -154,16 +154,19 @@ public class WorkdaySessionSuccessTests
         Assert.That(summary.FinalState, Is.EqualTo(WorkdayState.Completed));
         Assert.That(summary.EndedAt.TotalMilliseconds,
             Is.EqualTo(session.Settings.ClosesAt.TotalMilliseconds));
-        Assert.That(summary.Credibility, Is.EqualTo(100));
+        Assert.That(summary.Credibility, Is.EqualTo(80));
+        Assert.That(session.Delegation.Expiries.Count, Is.EqualTo(2));
+        Assert.That(session.Trust.GetTrust("steve"), Is.EqualTo(40));
         Assert.That(summary.Incidents.Count, Is.EqualTo(3));
         Assert.That(summary.History.Count, Is.EqualTo(3));
         Assert.That(summary.MissedDeadlines, Is.Empty);
         foreach (IncidentSummary incident in summary.Incidents)
             Assert.That(incident.Status, Is.EqualTo(IncidentStatus.Approved));
-        foreach (ReviewHistoryEntry entry in summary.History)
+        var reviewCredibility = new[] { 100, 90, 90 };
+        for (int i = 0; i < summary.History.Count; i++)
         {
-            Assert.That(entry.CredibilityBefore, Is.EqualTo(100));
-            Assert.That(entry.CredibilityAfter, Is.EqualTo(100));
+            Assert.That(summary.History[i].CredibilityBefore, Is.EqualTo(reviewCredibility[i]));
+            Assert.That(summary.History[i].CredibilityAfter, Is.EqualTo(reviewCredibility[i]));
         }
 
         session.AdvanceRealSeconds(10000);

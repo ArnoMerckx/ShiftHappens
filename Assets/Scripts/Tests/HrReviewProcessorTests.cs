@@ -222,9 +222,9 @@ public class HrReviewProcessorTests
         var plans = new List<DayIncidentPlan>
         {
             new DayIncidentPlan(definition, new IncidentScheduleEntry(
-                "first", "I2", new TimeRange(0, 635, 640), 675, 720)),
+                "first", "I2", new TimeRange(0, 635, 640), 675, 720), "dave"),
             new DayIncidentPlan(definition, new IncidentScheduleEntry(
-                "second", "I2", new TimeRange(0, 635, 640), 675, 720))
+                "second", "I2", new TimeRange(0, 635, 640), 675, 720), "dave")
         };
         context = new HrReviewTestContext(new DayData(context.Day.ScheduleData,
             new List<EvidenceDefinition>(context.Day.EvidenceDatabase.All), plans));

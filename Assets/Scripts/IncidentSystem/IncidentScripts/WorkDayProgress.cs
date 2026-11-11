@@ -22,7 +22,7 @@ public sealed class WorkdayProgress
 
     public event Action Changed;
 
-    public WorkdayProgress(CredibilityRules rules, HrReviewProcessor processor, EventScheduler scheduler)
+    public WorkdayProgress(CredibilityRules rules, HrReviewProcessor processor, EventScheduler scheduler, int? openingCredibility = null)
     {
         if (rules == null)
             throw new ArgumentNullException(nameof(rules));
@@ -33,15 +33,33 @@ public sealed class WorkdayProgress
         if (scheduler == null)
             throw new ArgumentNullException(nameof(scheduler));
 
+        int opening = openingCredibility ?? rules.StartingCredibility;
+
+        if (opening <= rules.FiringThreshold || opening > rules.MaximumCredibility)
+        {
+            throw new ArgumentOutOfRangeException(nameof(openingCredibility));
+        }
+
         this.rules = rules;
         this.scheduler = scheduler;
 
-        Credibility = rules.StartingCredibility;
+        Credibility = opening;
         History = history.AsReadOnly();
 
         MissedDeadlines = missedDeadlines.AsReadOnly();
 
         processor.ReviewCompleted += RecordReview;
+    }
+
+    internal int ApplyCredibilityDelta(int delta)
+    {
+        Credibility = rules.ApplyDelta(Credibility, delta);
+        return Credibility;
+    }
+
+    internal void NotifyChanged()
+    {
+        Changed?.Invoke();
     }
 
     private void RecordReview(QueuedHrReview review, HrEvaluationResult decision)
@@ -58,7 +76,7 @@ public sealed class WorkdayProgress
 
         int before = Credibility;
 
-        int after = decision.Verdict == HrVerdict.Rejected ? Math.Max(0, before - rules.RejectedReportPenalty) : before;
+        int after = decision.Verdict == HrVerdict.Rejected ? rules.ApplyDelta(before, -rules.RejectedReportPenalty) : before;
 
         var entry = new ReviewHistoryEntry(review, decision, scheduler.Now, before, after);
 
@@ -66,7 +84,7 @@ public sealed class WorkdayProgress
         history.Add(entry);
         Credibility = after;
 
-        Changed?.Invoke();
+        NotifyChanged();
     }
 
     internal bool RecordMissedDeadline(IncidentInstance incident)
@@ -80,7 +98,7 @@ public sealed class WorkdayProgress
         }
 
         int before = Credibility;
-        int after = Math.Max(0, before - rules.MissedDeadlinePenalty);
+        int after = rules.ApplyDelta(before, -rules.MissedDeadlinePenalty);
 
         var entry = new MissedDeadlineEntry(incident, scheduler.Now, before, after);
 
@@ -88,7 +106,7 @@ public sealed class WorkdayProgress
         missedDeadlines.Add(entry);
         Credibility = after;
 
-        Changed?.Invoke();
+        NotifyChanged();
         return true;
     }
 }

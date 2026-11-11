@@ -18,8 +18,13 @@ public sealed class WorkdaySession
     public ReportSubmissionService Submissions { get; }
     public HrReviewProcessor Reviews { get; }
     public WorkdayProgress Progress { get; }
+    public EmployeeTrustState Trust { get; }
+    public EmployeeWorkloadHistory Workload { get; }
+    public ConsequenceCoordinator Consequences { get; }
     public IncidentDeadlineService Deadlines { get; }
     public WorkdayController Workday { get; }
+
+    public DelegationService Delegation { get; }
     public DurationTimerService Timer { get; }
 
     public ShiftOSNotificationState Notifications { get; } = new ShiftOSNotificationState();
@@ -28,12 +33,30 @@ public sealed class WorkdaySession
 
     public event Action TimeAdvanced;
 
-    public WorkdaySession(DayData day, CredibilityRules credibilityRules = null)
+    public WorkdaySession(DayData day, CredibilityRules credibilityRules = null, ConsequenceRules consequenceRules = null, WorkdayOpeningState openingState = null)
     {
         if (day == null)
             throw new ArgumentNullException(nameof(day));
 
         Settings = day.ScheduleData.Settings;
+
+        var scoreRules = credibilityRules ?? new CredibilityRules();
+        var relationshipRules = consequenceRules ?? new ConsequenceRules();
+
+        if (openingState != null)
+        {
+            foreach (var assignment in openingState.Assignments)
+            {
+                if (assignment.DayIndex >= Settings.DayIndex || string.Equals(assignment.DayId, Settings.DayId, StringComparison.Ordinal))
+                {
+                    throw new ArgumentException("Opening assignments must belong to earlier days.", nameof(openingState));
+                }
+            }
+        }
+
+        Trust = new EmployeeTrustState( new List<string>(day.ScheduleData.EmployeeIds), relationshipRules, openingState == null ? null : new List<EmployeeTrustEntry>(openingState.EmployeeTrusts));
+
+        Workload = new EmployeeWorkloadHistory(openingState == null ? null : new List<AssignmentHistoryEntry>(openingState.Assignments));
 
         employeeRoster = day.ScheduleData.EmployeeRoster;
 
@@ -51,11 +74,20 @@ public sealed class WorkdaySession
 
         Reviews = new HrReviewProcessor(Submissions, scheduler, day.ScheduleData.HrKnowledge, day.EvidenceDatabase);
 
-        Progress = new WorkdayProgress(credibilityRules ?? new CredibilityRules(), Reviews, scheduler);
+        Progress = new WorkdayProgress(scoreRules, Reviews, scheduler, openingState?.Credibility);
 
         Deadlines = new IncidentDeadlineService(Deliveries, scheduler, Progress);
 
         Workday = new WorkdayController(Settings, scheduler, Deliveries, Submissions, Progress);
+
+        Delegation = new DelegationService(day, scheduler, () => Workday.CanAcceptWork);
+
+        Consequences = new ConsequenceCoordinator(day, scheduler, Progress, Trust, Workload, relationshipRules, Workday);
+
+        Workday.SetConsequenceGate(() => !Consequences.IsApplying);
+
+        Consequences.AttachDelegation(Delegation);
+        Consequences.AttachReports(Submissions);
 
         Timer = new DurationTimerService(scheduler, Workday);
 
@@ -66,6 +98,9 @@ public sealed class WorkdaySession
 
     public void AdvanceRealSeconds(double realSeconds)
     {
+        if (Consequences.IsApplying)
+            return;
+
         scheduler.AdvanceRealSeconds(realSeconds);
 
         TimeAdvanced?.Invoke();
@@ -145,6 +180,21 @@ public sealed class WorkdaySession
             entries.Add(new ReportOverviewViewData(incident));
 
         return entries;
+    }
+
+    public List<RequestOverviewViewData> GetRequestOverview()
+    {
+        var entries = new List<RequestOverviewViewData>();
+
+        foreach (RequestInstance request in Delegation.DeliveredRequests)
+            entries.Add(new RequestOverviewViewData(request));
+
+        return entries;
+    }
+
+    public DelegationSubmissionResult TryDelegate(string instanceId, string employeeId)
+    {
+        return Delegation.TrySubmit(instanceId, employeeId);
     }
 
     private void OnTimerCompleted()

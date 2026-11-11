@@ -340,7 +340,7 @@ public class ReportSubmissionServiceTests
             new List<ApprovedScheduleRecord>(), new List<ApprovedScheduleRecord>(),
             new List<Claim>());
         var plan = new DayIncidentPlan(definition, new IncidentScheduleEntry(
-            "last_incident", "I1", new TimeRange(int.MaxValue, 575, 580), 590, 630));
+            "last_incident", "I1", new TimeRange(int.MaxValue, 575, 580), 590, 630), "bob");
         UseDay(new DayData(schedule, new List<EvidenceDefinition>(),
             new List<DayIncidentPlan> { plan }));
         scheduler.AdvanceTo(new GameTime(int.MaxValue, 590));

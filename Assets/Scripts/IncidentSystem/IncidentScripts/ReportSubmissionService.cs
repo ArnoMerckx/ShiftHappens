@@ -32,6 +32,11 @@ public sealed class ReportSubmissionService
         PendingReviews = pendingReviews.AsReadOnly();
     }
 
+    internal bool UsesContext(EventScheduler scheduler)
+    {
+        return ReferenceEquals(this.scheduler, scheduler);
+    }
+
     public ReportValidationResult TrySubmit(string instanceId, string suspectId, List<string> evidenceIds)
     {
         IncidentInstance incident;

@@ -9,13 +9,15 @@ public sealed class WorkdayController
     private readonly ReportSubmissionService submissions;
     private readonly WorkdayProgress progress;
 
+
     public WorkdayState State { get; private set; } = WorkdayState.Working;
 
     public WorkdaySummary Summary { get; private set; }
 
     public bool IsTerminal => State == WorkdayState.Completed || State == WorkdayState.Fired;
+    private Func<bool> consequenceGate;
 
-    public bool CanAcceptWork => State == WorkdayState.Working && !scheduler.IsStopped && !progress.HasReachedFiringThreshold && scheduler.Now.TotalMilliseconds < settings.ClosesAt.TotalMilliseconds;
+    public bool CanAcceptWork => State == WorkdayState.Working && !scheduler.IsStopped && !progress.HasReachedFiringThreshold && scheduler.Now.TotalMilliseconds < settings.ClosesAt.TotalMilliseconds && (consequenceGate == null || consequenceGate());
 
     public event Action StateChanged;
 
@@ -67,6 +69,22 @@ public sealed class WorkdayController
 
         if (!CheckForFinish())
             StateChanged?.Invoke();
+    }
+
+    internal void SetConsequenceGate(Func<bool> gate)
+    {
+        if (gate == null)
+            throw new ArgumentNullException(nameof(gate));
+
+        if (consequenceGate != null)
+            throw new InvalidOperationException("A consequence gate has already been installed.");
+
+        consequenceGate = gate;
+    }
+
+    internal void RefreshAfterConsequence()
+    {
+        CheckForFinish();
     }
 
     private void OnProgressChanged()

@@ -17,7 +17,7 @@ public class WorkdaySessionTimingTests
         for (int i = 0; i < 2; i++)
         {
             plans.Add(new DayIncidentPlan(incident, new IncidentScheduleEntry(
-                "closing_" + i, "I2", new TimeRange(0, 635, 640), 1000, 1019)));
+                "closing_" + i, "I2", new TimeRange(0, 635, 640), 1000, 1019), "dave"));
         }
         return new DayData(monday.ScheduleData,
             new List<EvidenceDefinition>(monday.EvidenceDatabase.All), plans);

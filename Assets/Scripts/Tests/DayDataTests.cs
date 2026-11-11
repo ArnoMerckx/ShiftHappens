@@ -70,7 +70,7 @@ public class DayDataTests
         int delivery = 840, int deadline = 900)
     {
         return new DayIncidentPlan(definition, new IncidentScheduleEntry(
-            id, "I3", new TimeRange(day, 500, 510), delivery, deadline));
+            id, "I3", new TimeRange(day, 500, 510), delivery, deadline), "steve");
     }
 
     private DayData Create()

@@ -60,7 +60,7 @@ public class DurationTimerServiceTests
             new List<DayIncidentPlan>
             {
                 new DayIncidentPlan(definition, new IncidentScheduleEntry(
-                    "timer_late", "I2", new TimeRange(0, 635, 640), 1000, 1019))
+                    "timer_late", "I2", new TimeRange(0, 635, 640), 1000, 1019), "dave")
             });
     }
 

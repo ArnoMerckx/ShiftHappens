@@ -37,9 +37,13 @@ public class WorkdaySessionFailureTests
         Assert.That(session.Now.TotalMilliseconds, Is.EqualTo(summary.EndedAt.TotalMilliseconds));
         Assert.That(summary.History, Is.Empty);
         Assert.That(summary.MissedDeadlines.Count, Is.EqualTo(3));
-        AssertMissed(summary.MissedDeadlines[0], "D0I1", 630, 100, 65);
-        AssertMissed(summary.MissedDeadlines[1], "D0I2", 720, 65, 30);
-        AssertMissed(summary.MissedDeadlines[2], "D0I3", 900, 30, 0);
+        // The request expiry was registered at opening, before the HR overdue callback.
+        Assert.That(session.Consequences.History[0].Kind, Is.EqualTo(ConsequenceKind.RequestExpired));
+        Assert.That(session.Consequences.History[0].CredibilityBefore, Is.EqualTo(100));
+        Assert.That(session.Consequences.History[0].CredibilityAfter, Is.EqualTo(90));
+        AssertMissed(summary.MissedDeadlines[0], "D0I1", 630, 90, 55);
+        AssertMissed(summary.MissedDeadlines[1], "D0I2", 720, 55, 20);
+        AssertMissed(summary.MissedDeadlines[2], "D0I3", 900, 20, 0);
         Assert.That(overdue, Is.EqualTo(3));
         foreach (IncidentSummary incident in summary.Incidents)
         {
@@ -55,79 +59,89 @@ public class WorkdaySessionFailureTests
     }
 
     [Test]
-    public void TwoMissesAndSupportedReceipt_CompleteWithThirtyCredibility()
+    public void TwoMissesAndSupportedReceipt_WithUnansweredHelpCompleteWithTenCredibility()
     {
         var context = new WorkdaySessionTestContext();
         context.AdvanceTo(840);
-        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(30));
+        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(20));
         context.Submit("D0I3", "steve", "E_SUPPLIES_RECEIPT");
         Finish(context.Session);
 
         WorkdaySummary summary = context.Session.Workday.Summary;
         Assert.That(summary.FinalState, Is.EqualTo(WorkdayState.Completed));
-        Assert.That(summary.Credibility, Is.EqualTo(30));
+        Assert.That(summary.Credibility, Is.EqualTo(10));
         Assert.That(summary.MissedDeadlines.Count, Is.EqualTo(2));
         Assert.That(summary.History.Count, Is.EqualTo(1));
         Assert.That(summary.History[0].Decision.Verdict, Is.EqualTo(HrVerdict.Approved));
-        Assert.That(summary.History[0].CredibilityBefore, Is.EqualTo(30));
-        Assert.That(summary.History[0].CredibilityAfter, Is.EqualTo(30));
+        Assert.That(summary.History[0].CredibilityBefore, Is.EqualTo(20));
+        Assert.That(summary.History[0].CredibilityAfter, Is.EqualTo(20));
+        Assert.That(context.Session.Delegation.Expiries.Count, Is.EqualTo(2));
+        Assert.That(context.Session.Trust.GetTrust("steve"), Is.EqualTo(40));
         Assert.That(summary.Incidents[2].Status, Is.EqualTo(IncidentStatus.Approved));
         Assert.That(context.Session.Submissions.PendingReviews, Is.Empty);
     }
 
     [TestCase("bob", "E_SCHEDULE")]
     [TestCase("dave", "E_OFFICE_SOCIAL")]
-    public void ThreeRejectedReports_CompleteWithTwentyFiveCredibility(
+    public void ThreeRejectedReports_WithUnansweredHelpCompleteWithFiveCredibility(
         string printerSuspect, string printerEvidence)
     {
         var context = new WorkdaySessionTestContext();
         context.AdvanceTo(590);
         context.Submit("D0I1", "alice", "E_SCHEDULE");
         context.AdvanceTo(675);
-        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(75));
+        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(65));
         context.Submit("D0I2", printerSuspect, printerEvidence);
         context.AdvanceTo(840);
-        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(50));
+        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(40));
         context.Submit("D0I3", "steve", "E_SCHEDULE");
         Finish(context.Session);
 
         WorkdaySummary summary = context.Session.Workday.Summary;
         Assert.That(summary.FinalState, Is.EqualTo(WorkdayState.Completed));
-        Assert.That(summary.Credibility, Is.EqualTo(25));
+        Assert.That(summary.Credibility, Is.EqualTo(5));
         Assert.That(summary.History.Count, Is.EqualTo(3));
         Assert.That(summary.MissedDeadlines, Is.Empty);
         Assert.That(context.Session.Submissions.PendingReviews, Is.Empty);
+        var beforeReviews = new[] { 100, 65, 40 };
+        var afterReviews = new[] { 75, 40, 15 };
         for (int i = 0; i < 3; i++)
         {
             Assert.That(summary.Incidents[i].Status, Is.EqualTo(IncidentStatus.Rejected));
             Assert.That(summary.History[i].Decision.Verdict, Is.EqualTo(HrVerdict.Rejected));
-            Assert.That(summary.History[i].CredibilityBefore, Is.EqualTo(100 - i * 25));
-            Assert.That(summary.History[i].CredibilityAfter, Is.EqualTo(75 - i * 25));
+            Assert.That(summary.History[i].CredibilityBefore, Is.EqualTo(beforeReviews[i]));
+            Assert.That(summary.History[i].CredibilityAfter, Is.EqualTo(afterReviews[i]));
         }
+        Assert.That(context.Session.Delegation.Expiries.Count, Is.EqualTo(2));
         // HR still uses the approved dentist record when its email was never discovered.
         Assert.That(context.Session.IsEvidenceDiscovered("E_BOB_DENTIST"), Is.False);
     }
 
     [Test]
-    public void MixedMissAndRejectionPenalties_LeaveFiveCredibilityWithoutFiring()
+    public void MixedMissAndRejectionPenalties_WithUnansweredHelpFireAtLastHrDeadline()
     {
         var context = new WorkdaySessionTestContext();
         context.AdvanceTo(675);
-        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(65));
+        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(55));
         context.Submit("D0I2", "bob", "E_SCHEDULE");
         context.AdvanceTo(690);
-        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(40));
+        Assert.That(context.Session.Progress.Credibility, Is.EqualTo(30));
         Finish(context.Session);
 
         WorkdaySummary summary = context.Session.Workday.Summary;
-        Assert.That(summary.FinalState, Is.EqualTo(WorkdayState.Completed));
-        Assert.That(summary.Credibility, Is.EqualTo(5));
+        Assert.That(summary.FinalState, Is.EqualTo(WorkdayState.Fired));
+        Assert.That(summary.Credibility, Is.Zero);
+        Assert.That(summary.EndedAt.TotalMilliseconds,
+            Is.EqualTo(new GameTime(0, 900, 0, 1).TotalMilliseconds));
         Assert.That(summary.History.Count, Is.EqualTo(1));
-        Assert.That(summary.History[0].CredibilityBefore, Is.EqualTo(65));
-        Assert.That(summary.History[0].CredibilityAfter, Is.EqualTo(40));
+        Assert.That(summary.History[0].CredibilityBefore, Is.EqualTo(55));
+        Assert.That(summary.History[0].CredibilityAfter, Is.EqualTo(30));
         Assert.That(summary.MissedDeadlines.Count, Is.EqualTo(2));
-        AssertMissed(summary.MissedDeadlines[0], "D0I1", 630, 100, 65);
-        AssertMissed(summary.MissedDeadlines[1], "D0I3", 900, 40, 5);
+        AssertMissed(summary.MissedDeadlines[0], "D0I1", 630, 90, 55);
+        AssertMissed(summary.MissedDeadlines[1], "D0I3", 900, 30, 0);
+        Assert.That(context.Session.Delegation.Expiries.Count, Is.EqualTo(1));
+        Assert.That(context.Session.Delegation.TryGetDelivered("D0R2", out var openRequest), Is.True);
+        Assert.That(openRequest.Status, Is.EqualTo(RequestStatus.Open));
     }
 
     [Test]
@@ -172,9 +186,12 @@ public class WorkdaySessionFailureTests
     public void MixedPenalties_FireExactlyAtConfiguredNonzeroThreshold()
     {
         var context = new WorkdaySessionTestContext(
-            rules: new CredibilityRules(70, 25, 35, 10));
+            rules: new CredibilityRules(80, 25, 35, 10));
         context.AdvanceTo(675);
         Assert.That(context.Session.Progress.Credibility, Is.EqualTo(35));
+        // Start 10 higher so the additional help penalty still lands exactly on 10.
+        Assert.That(context.Session.Consequences.History[0].CredibilityBefore, Is.EqualTo(80));
+        Assert.That(context.Session.Consequences.History[0].CredibilityAfter, Is.EqualTo(70));
         context.Submit("D0I2", "bob", "E_SCHEDULE");
         Finish(context.Session);
 

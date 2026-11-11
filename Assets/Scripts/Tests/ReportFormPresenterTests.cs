@@ -288,7 +288,7 @@ public class ReportFormPresenterTests : EvidencePresentationTestBase
         var plans = new List<DayIncidentPlan>(context.Day.Incidents)
         {
             new DayIncidentPlan(definition, new IncidentScheduleEntry("SECOND", "I2",
-                new TimeRange(0, 635, 640), 675, 720))
+                new TimeRange(0, 635, 640), 675, 720), "dave")
         };
         UseDay(new DayData(context.Day.ScheduleData,
             new List<EvidenceDefinition>(context.Day.EvidenceDatabase.All), plans));

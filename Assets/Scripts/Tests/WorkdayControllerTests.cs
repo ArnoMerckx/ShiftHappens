@@ -50,7 +50,7 @@ public class WorkdayControllerTests
         for (int i = 0; i < count; i++)
         {
             plans.Add(new DayIncidentPlan(definition, new IncidentScheduleEntry(
-                "late_" + i, "I2", new TimeRange(0, 635, 640), 1000, 1019)));
+                "late_" + i, "I2", new TimeRange(0, 635, 640), 1000, 1019), "dave"));
         }
         return new DayData(context.Day.ScheduleData,
             new List<EvidenceDefinition>(context.Day.EvidenceDatabase.All), plans);
@@ -168,7 +168,7 @@ public class WorkdayControllerTests
         {
             context.Day.Incidents[0],
             new DayIncidentPlan(LoadIncident("I2_PrinterDamage"), new IncidentScheduleEntry(
-                "early_printer", "I2", new TimeRange(0, 600, 605), 610, 720)),
+                "early_printer", "I2", new TimeRange(0, 600, 605), 610, 720), "dave"),
             context.Day.Incidents[2]
         };
         UseDay(new DayData(context.Day.ScheduleData,

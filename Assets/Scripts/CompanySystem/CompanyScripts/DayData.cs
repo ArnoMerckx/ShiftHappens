@@ -60,6 +60,11 @@ public sealed class DayData
                 throw new ArgumentException("Delivery must occur during work hours and the deadline must precede closing.", nameof(incidents));
             }
 
+            if (string.IsNullOrWhiteSpace(plan.ActualCulpritId) || !employeeIds.Contains(plan.ActualCulpritId))
+            {
+                throw new ArgumentException("Every incident requires an actual culprit from the day's roster.", nameof(incidents));
+            }
+
             incidentCopy.Add(plan);
         }
 
@@ -67,6 +72,22 @@ public sealed class DayData
         EvidenceDatabase = database;
         Incidents = incidentCopy.AsReadOnly();
         Requests = BuildRequests(requests, scheduleData).AsReadOnly();
+    }
+
+    internal string GetActualCulpritId(string instanceId)
+    {
+        if (string.IsNullOrWhiteSpace(instanceId))
+            throw new ArgumentException("An incident instance ID is required.", nameof(instanceId));
+
+        foreach (var plan in Incidents)
+        {
+            if (string.Equals(plan.Schedule.InstanceId, instanceId, StringComparison.Ordinal))
+            {
+                return plan.ActualCulpritId;
+            }
+        }
+
+        throw new KeyNotFoundException($"Unknown incident instance: {instanceId}");
     }
 
     private static List<DayRequestPlan> BuildRequests(List<DayRequestPlan> requests, DayScheduleData scheduleData)

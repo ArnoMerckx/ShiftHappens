@@ -430,9 +430,9 @@ public class IncidentDeadlineServiceTests
         var plans = new List<DayIncidentPlan>
         {
             new DayIncidentPlan(coffee, new IncidentScheduleEntry(
-                "D0I1", "I1", new TimeRange(0, 575, 580), 590, 630)),
+                "D0I1", "I1", new TimeRange(0, 575, 580), 590, 630), "bob"),
             new DayIncidentPlan(printer, new IncidentScheduleEntry(
-                "review_before_miss", "I2", new TimeRange(0, 590, 595), 600, 700))
+                "review_before_miss", "I2", new TimeRange(0, 590, 595), 600, 700), "dave")
         };
         UseDay(new DayData(context.Day.ScheduleData,
             new List<EvidenceDefinition>(context.Day.EvidenceDatabase.All), plans));

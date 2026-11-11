@@ -153,7 +153,7 @@ public class DayDefinition : ScriptableObject
                 throw new InvalidOperationException("Day incidents cannot contain missing entries.");
             }
 
-            plans.Add(new DayIncidentPlan(entry.Definition, entry.ToSchedule(scheduleData.Settings.DayIndex)));
+            plans.Add(entry.ToPlan(scheduleData.Settings.DayIndex));
         }
 
         var requestPlans = new List<DayRequestPlan>();

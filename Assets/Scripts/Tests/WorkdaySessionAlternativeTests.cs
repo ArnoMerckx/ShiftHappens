@@ -51,7 +51,10 @@ public class WorkdaySessionAlternativeTests
         context.AdvanceTo(1020);
         WorkdaySummary summary = session.Workday.Summary;
         Assert.That(session.Workday.State, Is.EqualTo(WorkdayState.Completed));
-        Assert.That(summary.Credibility, Is.EqualTo(100));
+        Assert.That(summary.Credibility, Is.EqualTo(80));
+        Assert.That(session.Delegation.Expiries.Count, Is.EqualTo(2));
+        Assert.That(session.Workload.History, Is.Empty);
+        Assert.That(session.Trust.GetTrust("steve"), Is.EqualTo(finalSuspect == "steve" ? 40 : 50));
         Assert.That(summary.Incidents.Count, Is.EqualTo(3));
         Assert.That(summary.History.Count, Is.EqualTo(3));
         Assert.That(summary.MissedDeadlines, Is.Empty);
@@ -64,8 +67,8 @@ public class WorkdaySessionAlternativeTests
             Assert.That(entry.Decision.Verdict, Is.EqualTo(HrVerdict.Approved));
             Assert.That(entry.ReviewedAt.TotalMilliseconds,
                 Is.EqualTo(new GameTime(0, expectedReviewMinutes[i]).TotalMilliseconds));
-            Assert.That(entry.CredibilityBefore, Is.EqualTo(100));
-            Assert.That(entry.CredibilityAfter, Is.EqualTo(100));
+            Assert.That(entry.CredibilityBefore, Is.EqualTo(90));
+            Assert.That(entry.CredibilityAfter, Is.EqualTo(90));
             Assert.That(summary.Incidents[i].Status, Is.EqualTo(IncidentStatus.Approved));
         }
         Assert.That(summary.History[2].Report, Is.SameAs(third.SubmittedReport));

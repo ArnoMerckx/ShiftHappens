@@ -6,6 +6,7 @@ public sealed class DayIncidentEntry
 {
     [SerializeField] private string instanceId;
     [SerializeField] private IncidentDefinition incident;
+    [SerializeField] private EmployeeDefinition actualCulprit;
 
     [SerializeField, Range(0, 1439)]
     private int occurrenceStartMinute;
@@ -30,5 +31,13 @@ public sealed class DayIncidentEntry
         }
 
         return new IncidentScheduleEntry(instanceId, incident.IncidentId, new TimeRange(dayIndex, occurrenceStartMinute, occurrenceEndMinute), deliveryMinute, deadlineMinute);
+    }
+
+    public DayIncidentPlan ToPlan(int dayIndex)
+    {
+        if (actualCulprit == null)
+            throw new InvalidOperationException("A day incident entry requires an actual culprit.");
+
+        return new DayIncidentPlan(incident, ToSchedule(dayIndex), actualCulprit.EmployeeId);
     }
 }
