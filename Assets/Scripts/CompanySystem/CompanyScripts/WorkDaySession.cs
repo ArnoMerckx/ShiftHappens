@@ -8,6 +8,8 @@ public sealed class WorkdaySession
     private readonly EvidenceService evidence;
 
     private readonly IReadOnlyList<EmployeeViewData> employeeRoster;
+    private readonly SwarmsRequestReplyComposer swarmsRequestReplies;
+    private readonly SwarmsCoworkerReactionComposer swarmsCoworkerReactions;
 
     public WorkdaySettings Settings { get; }
 
@@ -21,6 +23,7 @@ public sealed class WorkdaySession
     public EmployeeTrustState Trust { get; }
     public EmployeeWorkloadHistory Workload { get; }
     public ConsequenceCoordinator Consequences { get; }
+    public SwarmsReplyFeed SwarmsReplies { get; }
     public IncidentDeadlineService Deadlines { get; }
     public WorkdayController Workday { get; }
 
@@ -33,7 +36,7 @@ public sealed class WorkdaySession
 
     public event Action TimeAdvanced;
 
-    public WorkdaySession(DayData day, CredibilityRules credibilityRules = null, ConsequenceRules consequenceRules = null, WorkdayOpeningState openingState = null)
+    public WorkdaySession(DayData day, CredibilityRules credibilityRules = null, ConsequenceRules consequenceRules = null, WorkdayOpeningState openingState = null, ReplyTimingRules replyTimingRules = null, CoworkerReactionRules coworkerReactionRules = null)
     {
         if (day == null)
             throw new ArgumentNullException(nameof(day));
@@ -88,6 +91,14 @@ public sealed class WorkdaySession
 
         Consequences.AttachDelegation(Delegation);
         Consequences.AttachReports(Submissions);
+
+        SwarmsReplies = new SwarmsReplyFeed(day, scheduler, Workday);
+
+        swarmsRequestReplies = new SwarmsRequestReplyComposer(day, Delegation, Consequences, Workload, SwarmsReplies, replyTimingRules ?? new ReplyTimingRules());
+
+        swarmsCoworkerReactions = new SwarmsCoworkerReactionComposer(day, Delegation, Consequences, Workload, Trust, SwarmsReplies, replyTimingRules ?? new ReplyTimingRules(), coworkerReactionRules ?? new CoworkerReactionRules());
+
+        SwarmsReplies.ReplyDelivered += OnSwarmsReplyDelivered;
 
         Timer = new DurationTimerService(scheduler, Workday);
 
@@ -195,6 +206,11 @@ public sealed class WorkdaySession
     public DelegationSubmissionResult TryDelegate(string instanceId, string employeeId)
     {
         return Delegation.TrySubmit(instanceId, employeeId);
+    }
+
+    private void OnSwarmsReplyDelivered(SwarmsReplyData reply)
+    {
+        Notifications.Publish(ShiftOSNotificationKind.SwarmsReply, "Swarms — " + reply.SenderName, "New reply: " + reply.Subject);
     }
 
     private void OnTimerCompleted()

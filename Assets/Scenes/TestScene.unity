@@ -3407,20 +3407,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Monday
-
-    Final credibility: 40
-
-
-    Approved: 1
-
-    Rejected: 1
-
-    Overdue: 1
-
-    Open: 0
-
-    Pending: 0'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4704,15 +4691,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.26415092, g: 0.26415092, b: 0.26415092, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: bed1775a9c728af45a4d1c40a6f130d2, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -5279,6 +5266,9 @@ MonoBehaviour:
   - definition: {fileID: 11400000, guid: 961761de2f81d4146914dd04519ec402, type: 2}
     windowPrefab: {fileID: 3319998285897549680, guid: 93c8a4254b650d045bb62bde629e3916, type: 3}
     contentPrefab: {fileID: 2515091981931159637, guid: 33d2d91d4a514ce8af55864f01126b41, type: 3}
+  - definition: {fileID: 11400000, guid: e6504a506a48ee84a9c092b06dde1d3b, type: 2}
+    windowPrefab: {fileID: 3319998285897549680, guid: 93c8a4254b650d045bb62bde629e3916, type: 3}
+    contentPrefab: {fileID: 1462580441692897339, guid: f09bff7fc57c11047bbd5e1ae160cc23, type: 3}
   - definition: {fileID: 11400000, guid: 4e4fce789a67a7b468fd99176b5c6335, type: 2}
     windowPrefab: {fileID: 3319998285897549680, guid: 93c8a4254b650d045bb62bde629e3916, type: 3}
     contentPrefab: {fileID: 1002, guid: 29a7cb5e3ed0093469af1d048e9301a0, type: 3}
@@ -5287,7 +5277,7 @@ MonoBehaviour:
     contentPrefab: {fileID: 1002, guid: 6cc59d36531b433a8a30dc968ee361f6, type: 3}
   - definition: {fileID: 11400000, guid: 3138c40b2ba18c542a5f03ea5ce9dda4, type: 2}
     windowPrefab: {fileID: 3319998285897549680, guid: 93c8a4254b650d045bb62bde629e3916, type: 3}
-    contentPrefab: {fileID: 1002, guid: 5cc291701d634da1afacfddef2971d01, type: 3}
+    contentPrefab: {fileID: 8021163121307125785, guid: 5cc291701d634da1afacfddef2971d01, type: 3}
   - definition: {fileID: 11400000, guid: aea0309e6a99f6f449bc846d2f9c8066, type: 2}
     windowPrefab: {fileID: 3319998285897549680, guid: 93c8a4254b650d045bb62bde629e3916, type: 3}
     contentPrefab: {fileID: 7746682799653143063, guid: 7b6422e768c967c499d4607ffd4b5de1, type: 3}
@@ -7669,7 +7659,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1990151722
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7723,7 +7713,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

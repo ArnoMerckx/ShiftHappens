@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fb6a7b6c9792bf49af3fafaf1744025, type: 3}
   m_Name: ShareLess
   m_EditorClassIdentifier: ShiftHappens.Runtime::AppDefinition
-  appId: shareless
-  displayName: Shareless
+  appId: linkedout
+  displayName: LinkedOut
   icon: {fileID: 0}
   defaultPosition: {x: 280, y: 200}
   defaultSize: {x: 440, y: 340}

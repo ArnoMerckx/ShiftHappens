@@ -110,7 +110,7 @@ public sealed class WorkdaySummaryView : MonoBehaviour
         {
             titleLabel.text = "Shift closing";
 
-            bodyLabel.text = $"Credibility: {session.Progress.Credibility}\n\n" + $"Reports awaiting HR: {session.Submissions.PendingReviews.Count}\n" + "New work is closed. HR is finishing pending reviews.";
+            bodyLabel.text = $"Reports awaiting HR: {session.Submissions.PendingReviews.Count}\n\n" + "New work is closed. HR is finishing pending reviews.";
         }
         else
         {
@@ -119,8 +119,7 @@ public sealed class WorkdaySummaryView : MonoBehaviour
             titleLabel.text = summary.FinalState == WorkdayState.Fired ? "You're fired" : "Shift completed";
 
             bodyLabel.text =
-                $"{summary.Settings.DisplayName}\n" +
-                $"Final credibility: {summary.Credibility}\n\n" +
+                $"{summary.Settings.DisplayName}\n\n" +
                 $"Approved: {Count(summary.Incidents, IncidentStatus.Approved)}\n" +
                 $"Rejected: {Count(summary.Incidents, IncidentStatus.Rejected)}\n" +
                 $"Overdue: {Count(summary.Incidents, IncidentStatus.Overdue)}\n" +

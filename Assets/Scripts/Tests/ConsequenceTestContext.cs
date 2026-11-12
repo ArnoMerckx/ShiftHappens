@@ -11,14 +11,16 @@ internal sealed class ConsequenceTestContext
 
     public ConsequenceTestContext(DayData day = null, int credibility = 80, int trust = 50,
         CredibilityRules scoreRules = null, ConsequenceRules rules = null,
-        WorkdayOpeningState opening = null)
+        WorkdayOpeningState opening = null, ReplyTimingRules replyTimingRules = null,
+        CoworkerReactionRules coworkerReactionRules = null)
     {
         Day = day ?? CreateDay();
         var entries = new List<EmployeeTrustEntry>();
         foreach (string id in Day.ScheduleData.EmployeeIds)
             entries.Add(new EmployeeTrustEntry(id, trust));
         Session = new WorkdaySession(Day, scoreRules, rules,
-            opening ?? new WorkdayOpeningState(credibility, entries, new List<AssignmentHistoryEntry>()));
+            opening ?? new WorkdayOpeningState(credibility, entries, new List<AssignmentHistoryEntry>()),
+            replyTimingRules, coworkerReactionRules);
         var field = typeof(WorkdaySession).GetField("scheduler", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.That(field, Is.Not.Null);
         Scheduler = (EventScheduler)field.GetValue(Session);

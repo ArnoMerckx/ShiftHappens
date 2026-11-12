@@ -6,6 +6,7 @@ public sealed class ShiftOSAppState
     public AppReadingState Excess { get; } = new AppReadingState();
     public AppReadingState Swarms { get; } = new AppReadingState();
     public AppReadingState ShareLess { get; } = new AppReadingState();
+    public TaskRelayAppState TaskRelay { get; } = new TaskRelayAppState();
     public ReportDraftState BlamePointDraft { get; } = new ReportDraftState();
 
     public AppReadingState BlamePointFormScroll { get; } = new AppReadingState();

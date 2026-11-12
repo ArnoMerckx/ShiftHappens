@@ -14,7 +14,6 @@ public sealed class SwarmsAppView : ShiftOSAppView
 
     private WorkdaySession session;
     private SwarmsPresenter presenter;
-    private string shownInstanceId;
 
     public override void Initialize(WorkdaySession workdaySession, ShiftOSAppState appState)
     {
@@ -48,14 +47,30 @@ public sealed class SwarmsAppView : ShiftOSAppView
 
     private void OnDisable()
     {
-        if (session != null)
-            session.Deliveries.IncidentDelivered -= OnIncidentDelivered;
+        Disconnect();
+    }
+
+    private void Disconnect()
+    {
+        if (session == null)
+            return;
+
+        session.Deliveries.IncidentDelivered -= OnIncidentDelivered;
+        session.Delegation.RequestDelivered -= OnRequestDelivered;
+        session.Delegation.DecisionResolved -= OnDecisionResolved;
+        session.Delegation.RequestExpired -= OnRequestExpired;
+        session.SwarmsReplies.ReplyDelivered -= OnReplyDelivered;
     }
 
     private void ConnectAndRefresh()
     {
-        session.Deliveries.IncidentDelivered -= OnIncidentDelivered;
+        Disconnect();
+
         session.Deliveries.IncidentDelivered += OnIncidentDelivered;
+        session.Delegation.RequestDelivered += OnRequestDelivered;
+        session.Delegation.DecisionResolved += OnDecisionResolved;
+        session.Delegation.RequestExpired += OnRequestExpired;
+        session.SwarmsReplies.ReplyDelivered += OnReplyDelivered;
 
         RefreshNotices();
     }
@@ -69,7 +84,7 @@ public sealed class SwarmsAppView : ShiftOSAppView
     {
         listScroll.RequestRestore();
 
-        List<IncidentNoticeViewData> notices = presenter.GetNotices();
+        List<SwarmsNoticeViewData> notices = presenter.GetNotices();
 
         while (rows.Count > notices.Count)
         {
@@ -86,15 +101,15 @@ public sealed class SwarmsAppView : ShiftOSAppView
             if (i >= rows.Count)
                 rows.Add(Instantiate(rowPrefab, listContent, false));
 
-            IncidentNoticeViewData notice = notices[i];
-            string status = $"Due {notice.DueTimeText}";
+            SwarmsNoticeViewData notice = notices[i];
+            string status = notice.StatusText;
 
-            if (string.Equals(notice.InstanceId, presenter.State.SelectedItemId, StringComparison.Ordinal))
+            if (string.Equals(notice.NoticeId, presenter.State.SelectedItemId, StringComparison.Ordinal))
             {
                 status += " · Selected";
             }
 
-            rows[i].Bind(notice.InstanceId, notice.DisplayName, status, SelectNotice);
+            rows[i].Bind(notice.NoticeId, notice.DisplayName, status, SelectNotice);
         }
 
         RefreshReader();
@@ -102,30 +117,40 @@ public sealed class SwarmsAppView : ShiftOSAppView
 
     private void RefreshReader()
     {
-        IncidentNoticeViewData selected = presenter.GetSelectedNotice();
+        SwarmsNoticeViewData selected = presenter.GetSelectedNotice();
 
         if (selected == null)
         {
-            shownInstanceId = null;
             reader.Clear("Select a notice");
             return;
         }
 
-        if (string.Equals(selected.InstanceId, shownInstanceId, StringComparison.Ordinal))
-        {
-            return;
-        }
-
-        string body = $"Report due: {selected.DueTimeText}\n\n{selected.BodyText}";
-
-        reader.Bind(selected.InstanceId, selected.DisplayName, body, presenter.State);
-
-        shownInstanceId = selected.InstanceId;
+        reader.Bind(selected.NoticeId, selected.DisplayName, selected.BodyText, presenter.State);
     }
 
     private void SelectNotice(string instanceId)
     {
         if (presenter.TrySelectNotice(instanceId))
             RefreshNotices();
+    }
+
+    private void OnRequestDelivered(RequestInstance request)
+    {
+        RefreshNotices();
+    }
+
+    private void OnDecisionResolved(DelegationDecision decision)
+    {
+        RefreshNotices();
+    }
+
+    private void OnRequestExpired(RequestExpiryEntry entry)
+    {
+        RefreshNotices();
+    }
+
+    private void OnReplyDelivered(SwarmsReplyData reply)
+    {
+        RefreshNotices();
     }
 }

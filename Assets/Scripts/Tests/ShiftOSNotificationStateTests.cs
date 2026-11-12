@@ -6,6 +6,7 @@ public class ShiftOSNotificationStateTests
 {
     [TestCase(ShiftOSNotificationKind.TimerExpired)]
     [TestCase(ShiftOSNotificationKind.HrDecision)]
+    [TestCase(ShiftOSNotificationKind.SwarmsReply)]
     public void Message_RetainsItsValidatedContent(ShiftOSNotificationKind kind)
     {
         var message = new ShiftOSNotification(kind, "Title", "Body");
@@ -15,7 +16,7 @@ public class ShiftOSNotificationStateTests
     }
 
     [TestCase(-1)]
-    [TestCase(2)]
+    [TestCase(3)]
     public void UnknownKind_IsRejected(int kind)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() =>
