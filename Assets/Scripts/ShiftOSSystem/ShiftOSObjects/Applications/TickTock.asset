@@ -15,6 +15,6 @@ MonoBehaviour:
   appId: ticktock
   displayName: TickTock
   icon: {fileID: -3037446265733131124, guid: f2af269aa16b41c40852e51323c7a14c, type: 2}
-  defaultPosition: {x: 1480, y: 760}
-  defaultSize: {x: 360, y: 240}
-  minimumSize: {x: 280, y: 200}
+  defaultPosition: {x: 1460, y: 620}
+  defaultSize: {x: 420, y: 380}
+  minimumSize: {x: 320, y: 330}

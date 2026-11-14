@@ -25,14 +25,22 @@ public static class ShiftOSVisualFoundationBuilder
     [MenuItem("Shift Happens/Visual Design/Build TickTock")]
     public static void BuildTickTock()
     {
+        AppDefinition definition = AssetDatabase.LoadAssetAtPath<AppDefinition>("Assets/Scripts/ShiftOSSystem/ShiftOSObjects/Applications/TickTock.asset");
+        SerializedObject definitionData = new SerializedObject(definition);
+        definitionData.FindProperty("defaultPosition").vector2Value = new Vector2(1460f, 620f);
+        definitionData.FindProperty("defaultSize").vector2Value = new Vector2(420f, 380f);
+        definitionData.FindProperty("minimumSize").vector2Value = new Vector2(320f, 330f);
+        definitionData.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(definition);
+
         EditPrefab("TickTockContent.prefab", root =>
         {
             Image background = Require<Image>(root);
             background.color = ShiftOSVisualTokens.DesktopInk;
 
             VerticalLayoutGroup layout = Require<VerticalLayoutGroup>(root);
-            layout.padding = new RectOffset(18, 18, 14, 14);
-            layout.spacing = 10f;
+            layout.padding = new RectOffset(14, 14, 10, 10);
+            layout.spacing = 6f;
             layout.childAlignment = TextAnchor.UpperCenter;
 
             AddOrUpdateHeader(root.transform, "TimerHeader", "DURATION TIMER", "ELAPSED REALITY IS NOT AVAILABLE HERE", ShiftOSVisualTokens.TickTock);
@@ -43,17 +51,16 @@ public static class ShiftOSVisualFoundationBuilder
             remaining.color = ShiftOSVisualTokens.TickTock;
             remaining.characterSpacing = 8f;
             remaining.alignment = TextAlignmentOptions.Center;
-            SetLayout(remaining.gameObject, 84f, 1f);
-            AddOrGet<Image>(remaining.gameObject).color = ShiftOSVisualTokens.Field;
+            SetLayout(remaining.gameObject, 64f, 1f);
 
             Transform durationRow = Find(root.transform, "DurationRow");
             Image durationPanel = AddOrGet<Image>(durationRow.gameObject);
             durationPanel.color = ShiftOSVisualTokens.PanelSlate;
             HorizontalLayoutGroup durationLayout = Require<HorizontalLayoutGroup>(durationRow.gameObject);
-            durationLayout.padding = new RectOffset(14, 14, 12, 12);
+            durationLayout.padding = new RectOffset(12, 12, 8, 8);
             durationLayout.spacing = 8f;
             durationLayout.childAlignment = TextAnchor.MiddleCenter;
-            SetLayout(durationRow.gameObject, 68f, 0f);
+            SetLayout(durationRow.gameObject, 50f, 0f);
 
             StyleInput(Find(root.transform, "MinutesInput").GetComponent<TMP_InputField>(), "00", ShiftOSVisualTokens.TickTock);
             StyleInput(Find(root.transform, "SecondsInput").GetComponent<TMP_InputField>(), "00", ShiftOSVisualTokens.TickTock);
@@ -65,7 +72,7 @@ public static class ShiftOSVisualFoundationBuilder
             controlsLayout.spacing = 8f;
             controlsLayout.padding = new RectOffset(0, 0, 2, 2);
             controlsLayout.childAlignment = TextAnchor.MiddleCenter;
-            SetLayout(controls.gameObject, 46f, 0f);
+            SetLayout(controls.gameObject, 38f, 0f);
 
             StyleButton(Find(root.transform, "StartButton").GetComponent<Button>(), ShiftOSVisualTokens.TickTock, true);
             StyleButton(Find(root.transform, "PauseResumeButton").GetComponent<Button>(), ShiftOSVisualTokens.RaisedPanel, false);
@@ -74,7 +81,7 @@ public static class ShiftOSVisualFoundationBuilder
             TMP_Text feedback = Find(root.transform, "FeedbackLabel").GetComponent<TMP_Text>();
             StyleText(feedback, ShiftOSVisualTokens.TextMuted, ShiftOSVisualTokens.MetadataSize, FontStyles.Normal);
             feedback.alignment = TextAlignmentOptions.Center;
-            SetLayout(feedback.gameObject, 26f, 0f);
+            SetLayout(feedback.gameObject, 18f, 0f);
 
             AddOrUpdateFooter(root.transform, "TimerFooter", "DURATION ONLY  /  CHECK THE WALL CLOCK FOR REALITY", ShiftOSVisualTokens.TickTock);
         });
@@ -435,7 +442,7 @@ public static class ShiftOSVisualFoundationBuilder
         Transform existing = parent.Find(name);
         GameObject header = existing != null ? existing.gameObject : CreatePanel(name, parent, ShiftOSVisualTokens.PanelSlate);
         header.transform.SetSiblingIndex(0);
-        SetLayout(header, 54f, 0f);
+        SetLayout(header, 42f, 0f);
         AddOrUpdateText(header.transform, "Title", title, accent, 15f, FontStyles.Bold, TextAlignmentOptions.Left, new Vector2(12f, -7f), new Vector2(-12f, 22f));
         AddOrUpdateText(header.transform, "Subtitle", subtitle, ShiftOSVisualTokens.TextMuted, 9f, FontStyles.UpperCase, TextAlignmentOptions.Left, new Vector2(12f, 4f), new Vector2(-12f, 22f));
         AddOrUpdateAccent(header.transform, "Accent", accent);
@@ -446,7 +453,7 @@ public static class ShiftOSVisualFoundationBuilder
         Transform existing = parent.Find(name);
         GameObject footer = existing != null ? existing.gameObject : CreatePanel(name, parent, ShiftOSVisualTokens.PanelSlate);
         footer.transform.SetAsLastSibling();
-        SetLayout(footer, 24f, 0f);
+        SetLayout(footer, 18f, 0f);
         AddOrUpdateText(footer.transform, "Label", text, ShiftOSVisualTokens.TextMuted, 9f, FontStyles.UpperCase, TextAlignmentOptions.Center, Vector2.zero, Vector2.zero);
         AddOrUpdateAccent(footer.transform, "Accent", accent);
     }
