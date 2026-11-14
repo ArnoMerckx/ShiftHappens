@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2a54b405ef1b0344a8b3bca09676728, type: 3}
+  m_Name: Campaign
+  m_EditorClassIdentifier: ShiftHappens.Runtime::CampaignDefinition
+  campaignId: shift_happens
+  contentId: monday_v1
+  days:
+  - {fileID: 11400000, guid: e6bc160af5cc7884f9afef04020de90f, type: 2}
