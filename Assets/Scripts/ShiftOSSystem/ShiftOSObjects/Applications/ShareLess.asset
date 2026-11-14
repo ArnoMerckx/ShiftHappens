@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShiftHappens.Runtime::AppDefinition
   appId: linkedout
   displayName: LinkedOut
-  icon: {fileID: 0}
+  icon: {fileID: 7041183929962461238, guid: e92d00c023e3c4b4ba4e78da4dd04a47, type: 2}
   defaultPosition: {x: 280, y: 200}
   defaultSize: {x: 440, y: 340}
   minimumSize: {x: 360, y: 260}

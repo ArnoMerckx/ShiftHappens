@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShiftHappens.Runtime::AppDefinition
   appId: blamepoint
   displayName: BlamePoint
-  icon: {fileID: 0}
+  icon: {fileID: -7979400875927671473, guid: 5b047dcec7c6f984eb88dc1e8c92c091, type: 2}
   defaultPosition: {x: 1216, y: 24}
   defaultSize: {x: 680, y: 700}
   minimumSize: {x: 480, y: 360}

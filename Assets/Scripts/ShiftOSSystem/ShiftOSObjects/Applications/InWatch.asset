@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShiftHappens.Runtime::AppDefinition
   appId: inwatch
   displayName: InWatch
-  icon: {fileID: 0}
+  icon: {fileID: 7155920048594160340, guid: 6239590e3cd40b241a5c74f3355fc592, type: 2}
   defaultPosition: {x: 24, y: 24}
   defaultSize: {x: 560, y: 600}
   minimumSize: {x: 400, y: 300}

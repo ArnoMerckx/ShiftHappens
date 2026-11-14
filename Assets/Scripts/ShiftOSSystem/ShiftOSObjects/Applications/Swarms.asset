@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShiftHappens.Runtime::AppDefinition
   appId: swarms
   displayName: Swarms
-  icon: {fileID: 0}
+  icon: {fileID: -2037557159523239290, guid: e08758f26845e9f4d9177d3369876cb9, type: 2}
   defaultPosition: {x: 160, y: 120}
   defaultSize: {x: 520, y: 420}
   minimumSize: {x: 360, y: 260}

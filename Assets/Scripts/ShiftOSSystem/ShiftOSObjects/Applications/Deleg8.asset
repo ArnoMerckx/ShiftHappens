@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ShiftHappens.Runtime::AppDefinition
   appId: taskrelay
   displayName: Deleg8
-  icon: {fileID: 0}
+  icon: {fileID: -6081664686163705037, guid: 79f23732077463b499d322edf70bd1fc, type: 2}
   defaultPosition: {x: 360, y: 100}
   defaultSize: {x: 760, y: 680}
   minimumSize: {x: 600, y: 540}
