@@ -9,6 +9,7 @@ public static class ShiftOSVisualFoundationBuilder
 {
     private const string PrefabRoot = "Assets/Prefabs/ShiftOS/";
     private const string IconRoot = "Assets/Assets/ShiftOS/Icons/";
+    private const string LinkedOutRowPrefab = "LinkedOutEmployeeRow.prefab";
 
     [MenuItem("Shift Happens/Visual Design/Build Shared Foundation")]
     public static void BuildSharedFoundation()
@@ -93,12 +94,14 @@ public static class ShiftOSVisualFoundationBuilder
     [MenuItem("Shift Happens/Visual Design/Build LinkedOut")]
     public static void BuildLinkedOut()
     {
+        EnsureLinkedOutRowPrefab();
+
         EditPrefab("ShareLessContent.prefab", root =>
         {
             Image rootImage = AddOrGet<Image>(root);
             rootImage.color = ShiftOSVisualTokens.DesktopInk;
 
-            Transform inbox = Find(root.transform, "Inbox");
+            Transform inbox = root.transform.Find("PersonnelIndex") ?? Find(root.transform, "Inbox");
             RectTransform inboxRect = (RectTransform)inbox;
             inboxRect.anchorMin = new Vector2(0f, 0f);
             inboxRect.anchorMax = new Vector2(0.36f, 1f);
@@ -129,9 +132,15 @@ public static class ShiftOSVisualFoundationBuilder
             body.color = new Color(0.16f, 0.23f, 0.31f, 1f);
             body.fontSize = ShiftOSVisualTokens.BodySize;
             body.lineSpacing = 10f;
+
+            ShareLessAppView view = Require<ShareLessAppView>(root);
+            DocumentListRowView linkedOutRow = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabRoot + LinkedOutRowPrefab).GetComponent<DocumentListRowView>();
+            SerializedObject viewData = new SerializedObject(view);
+            viewData.FindProperty("rowPrefab").objectReferenceValue = linkedOutRow;
+            viewData.ApplyModifiedPropertiesWithoutUndo();
         });
 
-        EditPrefab("DocumentListRow.prefab", root =>
+        EditPrefab(LinkedOutRowPrefab, root =>
         {
             Image image = Require<Image>(root);
             image.color = ShiftOSVisualTokens.RaisedPanel;
@@ -204,9 +213,32 @@ public static class ShiftOSVisualFoundationBuilder
         {
             Require<Image>(root).color = ShiftOSVisualTokens.RaisedPanel;
             StyleButton(Require<Button>(root), ShiftOSVisualTokens.RaisedPanel, false);
-            StyleText(Find(root.transform, "TitleLabel").GetComponent<TMP_Text>(), ShiftOSVisualTokens.TextPrimary, 15f, FontStyles.Bold);
-            StyleText(Find(root.transform, "StatusLabel").GetComponent<TMP_Text>(), ShiftOSVisualTokens.TextMuted, ShiftOSVisualTokens.MetadataSize, FontStyles.UpperCase);
+            SetLayout(root, 64f, -1f);
+
+            TMP_Text title = Find(root.transform, "TitleLabel").GetComponent<TMP_Text>();
+            StyleText(title, ShiftOSVisualTokens.TextPrimary, 15f, FontStyles.Bold);
+            title.margin = Vector4.zero;
+
+            TMP_Text status = Find(root.transform, "StatusLabel").GetComponent<TMP_Text>();
+            StyleText(status, ShiftOSVisualTokens.TextMuted, ShiftOSVisualTokens.MetadataSize, FontStyles.UpperCase);
+            status.margin = Vector4.zero;
+
+            Transform linkedOutAccent = root.transform.Find("PersonnelAccent");
+            if (linkedOutAccent != null)
+                UnityEngine.Object.DestroyImmediate(linkedOutAccent.gameObject);
         });
+    }
+
+    private static void EnsureLinkedOutRowPrefab()
+    {
+        string path = PrefabRoot + LinkedOutRowPrefab;
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null)
+            return;
+
+        if (!AssetDatabase.CopyAsset(PrefabRoot + "DocumentListRow.prefab", path))
+            throw new InvalidOperationException("Could not create the LinkedOut-specific employee row prefab.");
+
+        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
     }
 
     private static void StyleDocumentReader()
